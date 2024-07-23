@@ -47,6 +47,27 @@ AsyncSessionScoped = scoped_session(AsyncTestingSessionLocal)
 
 
 @pytest.fixture
+def user_token(verified_user):
+    access_token = create_access_token(
+            data={"sub": verified_user.email, "role": str(verified_user.role.name)}
+        )
+    return access_token
+
+@pytest.fixture
+def admin_token(admin_user):
+    access_token = create_access_token(
+            data={"sub": admin_user.email, "role": str(admin_user.role.name)}
+        )
+    return access_token
+
+@pytest.fixture
+def manager_token(manager_user):
+    access_token = create_access_token(
+            data={"sub": manager_user.email, "role": str(manager_user.role.name)}
+        )
+    return access_token
+
+@pytest.fixture
 def email_service():
     # Assuming the TemplateManager does not need any arguments for initialization
     template_manager = TemplateManager()
@@ -215,9 +236,10 @@ async def manager_user(db_session: AsyncSession):
 @pytest.fixture
 def user_base_data():
     return {
-        "username": "john_doe_123",
+        "nickname": "john_doe_123",
         "email": "john.doe@example.com",
-        "full_name": "John Doe",
+        "first_name": "John",
+        "last_name": "Doe",
         "bio": "I am a software engineer with over 5 years of experience.",
         "profile_picture_url": "https://example.com/profile_pictures/john_doe.jpg"
     }
@@ -241,7 +263,8 @@ def user_create_data(user_base_data):
 def user_update_data():
     return {
         "email": "john.doe.new@example.com",
-        "full_name": "John H. Doe",
+        "first_name": "John H.",
+        "last_name": "Doe",
         "bio": "I specialize in backend development with Python and Node.js.",
         "profile_picture_url": "https://example.com/profile_pictures/john_doe_updated.jpg"
     }
@@ -249,7 +272,7 @@ def user_update_data():
 @pytest.fixture
 def user_response_data():
     return {
-        "id": "unique-id-string",
+        "id": "fc963539-792b-4d69-a78c-a90e770aa896",
         "username": "testuser",
         "email": "test@example.com",
         "last_login_at": datetime.now(),
@@ -260,4 +283,4 @@ def user_response_data():
 
 @pytest.fixture
 def login_request_data():
-    return {"username": "john_doe_123", "password": "SecurePassword123!"}
+    return {"email": "john_doe_123@example.com", "password": "SecurePassword123!"}
