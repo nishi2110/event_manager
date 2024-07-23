@@ -59,6 +59,7 @@ class UserService:
                 return None
             validated_data['hashed_password'] = hash_password(validated_data.pop('password'))
             new_user = User(**validated_data)
+            new_user.verification_token = generate_verification_token()
             new_user.nickname = validated_data['nickname']
             session.add(new_user)
             await session.commit()
