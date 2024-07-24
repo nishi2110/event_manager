@@ -15,6 +15,7 @@ from uuid import UUID
 from app.services.email_service import EmailService
 from app.models.user_model import UserRole
 import logging
+from fastapi import HTTPException, status
 
 settings = get_settings()
 logger = logging.getLogger(__name__)
@@ -56,14 +57,20 @@ class UserService:
             existing_user = await cls.get_by_email(session, validated_data['email'])
             if existing_user:
                 logger.error("User with given email already exists.")
-                return None
+                raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Email already exists")
+            
+            provided_nickname = validated_data.get('nickname')
+            if not provided_nickname:
+                logger.error("No nickname provided.")
+                raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="No nickname provided")
+
+            if await cls.get_by_nickname(session, provided_nickname):
+                logger.error("User with given nickname already exists.")
+                raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Nickname already exists")
             validated_data['hashed_password'] = hash_password(validated_data.pop('password'))
             new_user = User(**validated_data)
             new_user.verification_token = generate_verification_token()
-            new_nickname = generate_nickname()
-            while await cls.get_by_nickname(session, new_nickname):
-                new_nickname = generate_nickname()
-            new_user.nickname = new_nickname
+            new_user.nickname = provided_nickname
             session.add(new_user)
             await session.commit()
             await email_service.send_verification_email(new_user)
@@ -71,7 +78,7 @@ class UserService:
             return new_user
         except ValidationError as e:
             logger.error(f"Validation error during user creation: {e}")
-            return None
+            raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(e))
 
     @classmethod
     async def update(cls, session: AsyncSession, user_id: UUID, update_data: Dict[str, str]) -> Optional[User]:
