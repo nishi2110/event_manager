@@ -4,6 +4,8 @@ from sqlalchemy import select
 from app.dependencies import get_settings
 from app.models.user_model import User
 from app.services.user_service import UserService
+from unittest.mock import patch
+from fastapi import HTTPException
 
 pytestmark = pytest.mark.asyncio
 
@@ -156,3 +158,96 @@ async def test_unlock_user_account(db_session, locked_user):
     assert unlocked, "The account should be unlocked"
     refreshed_user = await UserService.get_by_id(db_session, locked_user.id)
     assert not refreshed_user.is_locked, "The user should no longer be locked"
+
+base_user_data = {
+    "email": "base_user@example.com",
+    "password": "ValidPassword123!",
+    "nickname": "base_nickname",
+}
+
+# Helper function for user registration tests
+async def register_user_helper(db_session, email_service, user_data):
+    return await UserService.register_user(db_session, user_data, email_service)
+
+# Test registering a user with a provided nickname
+async def test_register_with_valid_nickname(db_session, email_service):
+    user_data = base_user_data.copy()
+    user_data.update({
+        "nickname": "unique_nickname_123",
+    })
+    user = await register_user_helper(db_session, email_service, user_data)
+    assert user is not None
+    assert user.email == user_data["email"]
+    assert user.nickname == user_data["nickname"]
+
+# Test registering a user without a nickname
+@patch('app.services.user_service.logger')
+async def test_register_without_nickname(mock_logger, db_session, email_service):
+    user_data = base_user_data.copy()
+    user_data.pop("nickname")
+    with pytest.raises(HTTPException) as exc_info:
+        await register_user_helper(db_session, email_service, user_data)
+    assert exc_info.value.status_code == 500
+    assert exc_info.value.detail == "No nickname provided"
+    mock_logger.error.assert_called_with("No nickname provided.")
+
+# Test registering a user with an invalid nickname (empty string)
+@patch('app.services.user_service.logger')
+async def test_register_invalid_nickname(mock_logger, db_session, email_service):
+    user_data = base_user_data.copy()
+    user_data.update({
+        "nickname": ""
+    })
+    with pytest.raises(HTTPException) as exc_info:
+        await register_user_helper(db_session, email_service, user_data)
+    assert exc_info.value.status_code == 422
+    mock_logger.error.assert_called()
+
+# Test registering a user with an already taken nickname
+@patch('app.services.user_service.logger')
+async def test_register_taken_nickname(mock_logger, db_session, email_service):
+    # Create the first user with a unique nickname
+    user_data_1 = base_user_data.copy()
+    user_data_1.update({
+        "nickname": "unique_nickname_123",
+    })
+    first_user = await register_user_helper(db_session, email_service, user_data_1)
+    assert first_user is not None
+    assert first_user.email == user_data_1["email"]
+    assert first_user.nickname == user_data_1["nickname"]
+
+    # Attempt to create a second user with the same nickname
+    user_data_2 = base_user_data.copy()
+    user_data_2.update({
+        "nickname": "unique_nickname_123",  # Same nickname as the first user
+        "email": "different_email@example.com"  # Different email to test nickname uniqueness
+    })
+    with pytest.raises(HTTPException) as exc_info:
+        await register_user_helper(db_session, email_service, user_data_2)
+    assert exc_info.value.status_code == 500
+    assert exc_info.value.detail == "Nickname already exists"
+    mock_logger.error.assert_called_with("User with given nickname already exists.")
+
+# Test registering a user with a nickname that exceeds 30 characters
+@patch('app.services.user_service.logger')
+async def test_register_user_long_nickname(mock_logger, db_session, email_service):
+    user_data = base_user_data.copy()
+    user_data.update({
+        "nickname": "this_nickname_is_way_too_long_and_exceeds_30_characters",
+    })
+    with pytest.raises(HTTPException) as exc_info:
+        await register_user_helper(db_session, email_service, user_data)
+    assert exc_info.value.status_code == 422
+    mock_logger.error.assert_called()
+
+# Test registering a user with a nickname containing disallowed special characters
+@patch('app.services.user_service.logger')
+async def test_register_disallowed_characters_nickname(mock_logger, db_session, email_service):
+    user_data = base_user_data.copy()
+    user_data.update({
+        "nickname": "invalid_nickname$%",
+    })
+    with pytest.raises(HTTPException) as exc_info:
+        await register_user_helper(db_session, email_service, user_data)
+    assert exc_info.value.status_code == 422
+    mock_logger.error.assert_called()
