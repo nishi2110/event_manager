@@ -128,9 +128,7 @@ class UserService:
         user = await cls.get_by_email(session, email)
         if user:
             if user.email_verified is False:
-                return None
-            if user.is_locked:
-                return None
+                raise HTTPException(status_code=500, detail="Email not verified")
             if verify_password(password, user.hashed_password):
                 user.failed_login_attempts = 0
                 user.last_login_at = datetime.now(timezone.utc)
