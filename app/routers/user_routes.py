@@ -33,6 +33,8 @@ from app.services.jwt_service import create_access_token
 from app.utils.link_generation import create_user_links, generate_pagination_links
 from app.dependencies import get_settings
 from app.services.email_service import EmailService
+import logging
+logger = logging.getLogger('app')
 router = APIRouter()
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
 settings = get_settings()
@@ -139,15 +141,14 @@ async def create_user(user: UserCreate, request: Request, db: AsyncSession = Dep
     Returns:
     - UserResponse: The newly created user's information along with navigation links.
     """
-    existing_user = await UserService.get_by_email(db, user.email)
-    if existing_user:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Email already exists")
-    
+    logger.info(f"Creating user with email: {user.email}")
     created_user = await UserService.create(db, user.model_dump(), email_service)
     if not created_user:
+        logger.error(f"Failed to create user with email: {user.email}")
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to create user")
     
     
+    logger.info(f"Successfully created user with email: {created_user.email}")
     return UserResponse.model_construct(
         id=created_user.id,
         bio=created_user.bio,
@@ -159,6 +160,10 @@ async def create_user(user: UserCreate, request: Request, db: AsyncSession = Dep
         last_login_at=created_user.last_login_at,
         created_at=created_user.created_at,
         updated_at=created_user.updated_at,
+        role=created_user.role,
+        is_professional=created_user.is_professional,
+        linkedin_profile_url=created_user.linkedin_profile_url,
+        github_profile_url=created_user.github_profile_url,
         links=create_user_links(created_user.id, request)
     )
 
