@@ -78,7 +78,7 @@ class UserService:
             session.add(new_user)
             await session.commit()
             await email_service.send_verification_email(new_user)
-            
+            logger.info(f"Created user with email: {new_user.email}, role: {new_user.role}")
             return new_user
         except ValidationError as e:
             logger.error(f"Validation error during user creation: {e}")
