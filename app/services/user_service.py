@@ -35,8 +35,11 @@ class UserService:
     @classmethod
     async def _fetch_user(cls, session: AsyncSession, **filters) -> Optional[User]:
         query = select(User).filter_by(**filters)
+        logger.debug(f"Fetching user with filters: {filters}")
         result = await cls._execute_query(session, query)
-        return result.scalars().first() if result else None
+        user = result.scalars().first() if result else None
+        logger.debug(f"Fetched user: {user}")
+        return user
 
     @classmethod
     async def get_by_id(cls, session: AsyncSession, user_id: UUID) -> Optional[User]:
@@ -48,6 +51,7 @@ class UserService:
 
     @classmethod
     async def get_by_email(cls, session: AsyncSession, email: str) -> Optional[User]:
+        logger.debug(f"Getting user by email: {email}")
         return await cls._fetch_user(session, email=email)
 
     @classmethod
@@ -127,15 +131,16 @@ class UserService:
     async def login_user(cls, session: AsyncSession, email: str, password: str) -> Optional[User]:
         user = await cls.get_by_email(session, email)
         if user:
+            logger.info(f"User found: {user.email}")
             if user.email_verified is False:
-                return None
-            if user.is_locked:
-                return None
+                logger.warning(f"Email not verified for user: {user.email}")
+                raise HTTPException(status_code=500, detail="Email not verified")
             if verify_password(password, user.hashed_password):
                 user.failed_login_attempts = 0
                 user.last_login_at = datetime.now(timezone.utc)
                 session.add(user)
                 await session.commit()
+                logger.info(f"User logged in successfully: {user.email}")
                 return user
             else:
                 user.failed_login_attempts += 1
@@ -143,6 +148,7 @@ class UserService:
                     user.is_locked = True
                 session.add(user)
                 await session.commit()
+                logger.warning(f"Incorrect password for user: {user.email}")
         return None
 
     @classmethod
@@ -173,7 +179,10 @@ class UserService:
             user.role = UserRole.AUTHENTICATED
             session.add(user)
             await session.commit()
+            logger.info(f"User email verified and role updated for user_id: {user_id}")
             return True
+        else:
+            logger.warning(f"Failed to verify email for user_id: {user_id} - Invalid or expired token")
         return False
 
     @classmethod
