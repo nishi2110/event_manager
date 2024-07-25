@@ -14,6 +14,7 @@ async def test_create_user_with_valid_data(db_session, email_service):
     user_data = {
         "email": "valid_user@example.com",
         "password": "ValidPassword123!",
+        "nickname":"ValidNickName12"
     }
     user = await UserService.create(db_session, user_data, email_service)
     assert user is not None
@@ -26,9 +27,11 @@ async def test_create_user_with_invalid_data(db_session, email_service):
         "email": "invalidemail",  # Invalid email
         "password": "short",  # Invalid password
     }
-    user = await UserService.create(db_session, user_data, email_service)
-    assert user is None
-
+    with pytest.raises(HTTPException) as exc_info:
+        await UserService.create(db_session, user_data, email_service)
+    assert exc_info.value.status_code == 422
+    assert "validation errors for UserCreate" in str(exc_info.value.detail)
+    
 # Test fetching a user by ID when the user exists
 async def test_get_by_id_user_exists(db_session, user):
     retrieved_user = await UserService.get_by_id(db_session, user.id)
@@ -96,6 +99,7 @@ async def test_register_user_with_valid_data(db_session, email_service):
     user_data = {
         "email": "register_valid_user@example.com",
         "password": "RegisterValid123!",
+        "nickname":"ValidNickName12"
     }
     user = await UserService.register_user(db_session, user_data, email_service)
     assert user is not None
@@ -107,8 +111,11 @@ async def test_register_user_with_invalid_data(db_session, email_service):
         "email": "registerinvalidemail",  # Invalid email
         "password": "short",  # Invalid password
     }
-    user = await UserService.register_user(db_session, user_data, email_service)
-    assert user is None
+    with pytest.raises(HTTPException) as exc_info:
+        await UserService.register_user(db_session, user_data, email_service)
+    assert exc_info.value.status_code == 422
+    assert "validation error for UserCreate" in str(exc_info.value.detail)
+
 
 # Test successful user login
 async def test_login_user_successful(db_session, verified_user):
@@ -125,9 +132,10 @@ async def test_login_user_incorrect_email(db_session):
     assert user is None
 
 # Test user login with incorrect password
-async def test_login_user_incorrect_password(db_session, user):
-    user = await UserService.login_user(db_session, user.email, "IncorrectPassword!")
+async def test_login_user_incorrect_password(db_session, verified_user):
+    user = await UserService.login_user(db_session, verified_user.email, "IncorrectPassword!")
     assert user is None
+
 
 # Test account lock after maximum failed login attempts
 async def test_account_lock_after_failed_logins(db_session, verified_user):
@@ -251,3 +259,4 @@ async def test_register_disallowed_characters_nickname(mock_logger, db_session, 
         await register_user_helper(db_session, email_service, user_data)
     assert exc_info.value.status_code == 422
     mock_logger.error.assert_called()
+

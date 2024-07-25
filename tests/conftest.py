@@ -249,15 +249,28 @@ def user_update_data():
 @pytest.fixture
 def user_response_data():
     return {
-        "id": "unique-id-string",
-        "username": "testuser",
+        "id": str(uuid4()),
         "email": "test@example.com",
+        "nickname": "responseuser",
+        "first_name": "Test",
+        "last_name": "User",
+        "bio": "This is a bio.",
+        "profile_picture_url": "https://example.com/profiles/responseuser.jpg",
+        "linkedin_profile_url": "https://linkedin.com/in/responseuser",
+        "github_profile_url": "https://github.com/responseuser",
+        "role": "AUTHENTICATED",
+        "is_professional": False,
         "last_login_at": datetime.now(),
         "created_at": datetime.now(),
         "updated_at": datetime.now(),
-        "links": []
+        "links": {"self": "https://example.com/users/responseuser"}
     }
+
+
 
 @pytest.fixture
 def login_request_data():
-    return {"username": "john_doe_123", "password": "SecurePassword123!"}
+    return {
+        "email": "john_doe_123@example.com",
+        "password": "SecurePassword123!"
+    }
