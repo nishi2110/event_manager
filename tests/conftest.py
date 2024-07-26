@@ -46,13 +46,11 @@ AsyncTestingSessionLocal = sessionmaker(engine, class_=AsyncSession, expire_on_c
 AsyncSessionScoped = scoped_session(AsyncTestingSessionLocal)
 
 
-@pytest.fixture
+@pytest.fixture(scope='module')
 def email_service():
-    # Assuming the TemplateManager does not need any arguments for initialization
     template_manager = TemplateManager()
-    email_service = EmailService(template_manager=template_manager)
-    return email_service
-
+    with patch('app.utils.smtp_connection.SMTPClient') as MockSMTPClient:
+        yield EmailService(template_manager=template_manager)
 
 # this is what creates the http client for your api tests
 @pytest.fixture(scope="function")

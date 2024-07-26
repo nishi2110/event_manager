@@ -1,5 +1,8 @@
 # email_service.py
 from builtins import ValueError, dict, str
+from unittest.mock import patch
+
+import pytest
 from settings.config import settings
 from app.utils.smtp_connection import SMTPClient
 from app.utils.template_manager import TemplateManager
@@ -35,3 +38,10 @@ class EmailService:
             "verification_url": verification_url,
             "email": user.email
         }, 'email_verification')
+
+    @pytest.fixture(scope='module')
+    def email_service():
+        template_manager = TemplateManager()
+        with patch('app.utils.smtp_connection.SMTPClient.send_email') as mock_send_email:
+            mock_send_email.return_value = None
+        yield EmailService(template_manager=template_manager)

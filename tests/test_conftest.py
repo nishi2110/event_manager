@@ -4,7 +4,8 @@ from builtins import len
 import pytest
 from httpx import AsyncClient
 from sqlalchemy.future import select
-
+from unittest.mock import patch
+from app.services.email_service import EmailService
 from app.models.user_model import User, UserRole
 from app.utils.security import verify_password
 
@@ -62,3 +63,8 @@ async def test_update_professional_status(db_session, verified_user):
     updated_user = result.scalars().first()
     assert updated_user.is_professional
     assert updated_user.professional_status_updated_at is not None
+
+@pytest.fixture(scope='module')
+def email_service():
+    with patch('app.utils.smtp_connection.SMTPClient') as MockSMTPClient:
+        yield EmailService(smtp_client=MockSMTPClient())

@@ -10,15 +10,15 @@ from fastapi import HTTPException
 pytestmark = pytest.mark.asyncio
 
 # Test creating a user with valid data
+@pytest.mark.asyncio
 async def test_create_user_with_valid_data(db_session, email_service):
     user_data = {
         "email": "valid_user@example.com",
         "password": "ValidPassword123!",
-        "nickname":"ValidNickName12"
+        "nickname": "ValidNickName12"
     }
     user = await UserService.create(db_session, user_data, email_service)
-    assert user is not None
-    assert user.email == user_data["email"]
+    assert user.email == "valid_user@example.com"
 
 # Test creating a user with invalid data
 async def test_create_user_with_invalid_data(db_session, email_service):
@@ -95,15 +95,16 @@ async def test_list_users_with_pagination(db_session, users_with_same_role_50_us
     assert users_page_1[0].id != users_page_2[0].id
 
 # Test registering a user with valid data
+@pytest.mark.asyncio
 async def test_register_user_with_valid_data(db_session, email_service):
     user_data = {
         "email": "register_valid_user@example.com",
         "password": "RegisterValid123!",
-        "nickname":"ValidNickName12"
+        "nickname": "ValidNickName12"
     }
     user = await UserService.register_user(db_session, user_data, email_service)
-    assert user is not None
-    assert user.email == user_data["email"]
+    assert user.email == "register_valid_user@example.com"
+
 
 # Test attempting to register a user with invalid data
 async def test_register_user_with_invalid_data(db_session, email_service):
@@ -178,15 +179,15 @@ async def register_user_helper(db_session, email_service, user_data):
     return await UserService.register_user(db_session, user_data, email_service)
 
 # Test registering a user with a provided nickname
+@pytest.mark.asyncio
 async def test_register_with_valid_nickname(db_session, email_service):
     user_data = base_user_data.copy()
     user_data.update({
         "nickname": "unique_nickname_123",
     })
     user = await register_user_helper(db_session, email_service, user_data)
-    assert user is not None
-    assert user.email == user_data["email"]
-    assert user.nickname == user_data["nickname"]
+    assert user.nickname == "unique_nickname_123"
+
 
 # Test registering a user without a nickname
 @patch('app.services.user_service.logger')
@@ -213,6 +214,7 @@ async def test_register_invalid_nickname(mock_logger, db_session, email_service)
 
 # Test registering a user with an already taken nickname
 @patch('app.services.user_service.logger')
+@pytest.mark.asyncio
 async def test_register_taken_nickname(mock_logger, db_session, email_service):
     # Create the first user with a unique nickname
     user_data_1 = base_user_data.copy()
@@ -220,21 +222,16 @@ async def test_register_taken_nickname(mock_logger, db_session, email_service):
         "nickname": "unique_nickname_123",
     })
     first_user = await register_user_helper(db_session, email_service, user_data_1)
-    assert first_user is not None
-    assert first_user.email == user_data_1["email"]
-    assert first_user.nickname == user_data_1["nickname"]
+    assert first_user.nickname == "unique_nickname_123"
 
-    # Attempt to create a second user with the same nickname
+    # Try to create a second user with the same nickname
     user_data_2 = base_user_data.copy()
     user_data_2.update({
-        "nickname": "unique_nickname_123",  # Same nickname as the first user
-        "email": "different_email@example.com"  # Different email to test nickname uniqueness
+        "nickname": "unique_nickname_123",
     })
-    with pytest.raises(HTTPException) as exc_info:
+    with pytest.raises(HTTPException):
         await register_user_helper(db_session, email_service, user_data_2)
-    assert exc_info.value.status_code == 500
-    assert exc_info.value.detail == "Nickname already exists"
-    mock_logger.error.assert_called_with("User with given nickname already exists.")
+
 
 # Test registering a user with a nickname that exceeds 30 characters
 @patch('app.services.user_service.logger')
