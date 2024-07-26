@@ -16,7 +16,7 @@ Fixtures:
 # Standard library imports
 from builtins import range
 from datetime import datetime
-from unittest.mock import patch
+from unittest.mock import patch, AsyncMock
 from uuid import uuid4
 
 # Third-party imports
@@ -50,6 +50,8 @@ AsyncSessionScoped = scoped_session(AsyncTestingSessionLocal)
 def email_service():
     template_manager = TemplateManager()
     with patch('app.utils.smtp_connection.SMTPClient') as MockSMTPClient:
+        instance = MockSMTPClient.return_value
+        instance.send_email = AsyncMock()
         yield EmailService(template_manager=template_manager)
 
 # this is what creates the http client for your api tests
