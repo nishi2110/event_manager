@@ -256,4 +256,3 @@ async def test_register_disallowed_characters_nickname(mock_logger, db_session, 
         await register_user_helper(db_session, email_service, user_data)
     assert exc_info.value.status_code == 422
     mock_logger.error.assert_called()
-
