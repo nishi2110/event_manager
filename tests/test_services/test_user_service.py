@@ -210,7 +210,7 @@ async def test_verify_email_with_token(db_session, user):
     assert result is True
 
 
-# Test unlocking a user's account
+# Test unlocking a user's account.
 async def test_unlock_user_account(db_session, locked_user):
     unlocked = await UserService.unlock_user_account(db_session, locked_user.id)
     assert unlocked, "The account should be unlocked"

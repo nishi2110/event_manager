@@ -204,7 +204,7 @@ class UserService:
         user = await cls.get_by_id(session, user_id)
         if user and user.is_locked:
             user.is_locked = False
-            user.failed_login_attempts = 0  # Optionally reset failed login attempts
+            user.failed_login_attempts = 0  # Optionally will reset failed login attempts
             session.add(user)
             await session.commit()
             return True
