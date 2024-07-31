@@ -33,11 +33,17 @@ from app.services.jwt_service import create_access_token
 from app.utils.link_generation import create_user_links, generate_pagination_links
 from app.dependencies import get_settings
 from app.services.email_service import EmailService
+
 router = APIRouter()
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
 settings = get_settings()
-@router.get("/users/{user_id}", response_model=UserResponse, name="get_user", tags=["User Management Requires (Admin or Manager Roles)"])
-async def get_user(user_id: UUID, request: Request, db: AsyncSession = Depends(get_db), token: str = Depends(oauth2_scheme), current_user: dict = Depends(require_role(["ADMIN", "MANAGER"]))):
+
+
+@router.get("/users/{user_id}", response_model=UserResponse, name="get_user",
+            tags=["User Management Requires (Admin or Manager Roles)"])
+async def get_user(user_id: UUID, request: Request, db: AsyncSession = Depends(get_db),
+                   token: str = Depends(oauth2_scheme),
+                   current_user: dict = Depends(require_role(["ADMIN", "MANAGER"]))):
     """
     Endpoint to fetch a user by their unique identifier (UUID).
 
@@ -68,8 +74,9 @@ async def get_user(user_id: UUID, request: Request, db: AsyncSession = Depends(g
         last_login_at=user.last_login_at,
         created_at=user.created_at,
         updated_at=user.updated_at,
-        links=create_user_links(user.id, request)  
+        links=create_user_links(user.id, request)
     )
+
 
 # Additional endpoints for update, delete, create, and list users follow a similar pattern, using
 # asynchronous database operations, handling security with OAuth2PasswordBearer, and enhancing response
@@ -78,8 +85,11 @@ async def get_user(user_id: UUID, request: Request, db: AsyncSession = Depends(g
 # This approach not only ensures that the API is secure and efficient but also promotes a better client
 # experience by adhering to REST principles and providing self-discoverable operations.
 
-@router.put("/users/{user_id}", response_model=UserResponse, name="update_user", tags=["User Management Requires (Admin or Manager Roles)"])
-async def update_user(user_id: UUID, user_update: UserUpdate, request: Request, db: AsyncSession = Depends(get_db), token: str = Depends(oauth2_scheme), current_user: dict = Depends(require_role(["ADMIN", "MANAGER"]))):
+@router.put("/users/{user_id}", response_model=UserResponse, name="update_user",
+            tags=["User Management Requires (Admin or Manager Roles)"])
+async def update_user(user_id: UUID, user_update: UserUpdate, request: Request, db: AsyncSession = Depends(get_db),
+                      token: str = Depends(oauth2_scheme),
+                      current_user: dict = Depends(require_role(["ADMIN", "MANAGER"]))):
     """
     Update user information.
 
@@ -90,7 +100,9 @@ async def update_user(user_id: UUID, user_update: UserUpdate, request: Request, 
     if user_update.email:
         email_id = user_update.email
     user_data = user_update.model_dump(exclude_unset=True)
-    updated_user = await UserService.update(db, user_id, user_data)
+    updated_user = await UserService.update(db, email_id, user_id, user_data)
+    if updated_user == 'email_exist':
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="email already exist")
     if not updated_user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
 
@@ -101,6 +113,7 @@ async def update_user(user_id: UUID, user_update: UserUpdate, request: Request, 
         last_name=updated_user.last_name,
         nickname=updated_user.nickname,
         email=updated_user.email,
+        role=updated_user.role,
         last_login_at=updated_user.last_login_at,
         profile_picture_url=updated_user.profile_picture_url,
         github_profile_url=updated_user.github_profile_url,
@@ -111,8 +124,10 @@ async def update_user(user_id: UUID, user_update: UserUpdate, request: Request, 
     )
 
 
-@router.delete("/users/{user_id}", status_code=status.HTTP_204_NO_CONTENT, name="delete_user", tags=["User Management Requires (Admin or Manager Roles)"])
-async def delete_user(user_id: UUID, db: AsyncSession = Depends(get_db), token: str = Depends(oauth2_scheme), current_user: dict = Depends(require_role(["ADMIN", "MANAGER"]))):
+@router.delete("/users/{user_id}", status_code=status.HTTP_204_NO_CONTENT, name="delete_user",
+               tags=["User Management Requires (Admin or Manager Roles)"])
+async def delete_user(user_id: UUID, db: AsyncSession = Depends(get_db), token: str = Depends(oauth2_scheme),
+                      current_user: dict = Depends(require_role(["ADMIN", "MANAGER"]))):
     """
     Delete a user by their ID.
 
@@ -124,9 +139,11 @@ async def delete_user(user_id: UUID, db: AsyncSession = Depends(get_db), token: 
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 
-
-@router.post("/users/", response_model=UserResponse, status_code=status.HTTP_201_CREATED, tags=["User Management Requires (Admin or Manager Roles)"], name="create_user")
-async def create_user(user: UserCreate, request: Request, db: AsyncSession = Depends(get_db), email_service: EmailService = Depends(get_email_service), token: str = Depends(oauth2_scheme), current_user: dict = Depends(require_role(["ADMIN", "MANAGER"]))):
+@router.post("/users/", response_model=UserResponse, status_code=status.HTTP_201_CREATED,
+             tags=["User Management Requires (Admin or Manager Roles)"], name="create_user")
+async def create_user(user: UserCreate, request: Request, db: AsyncSession = Depends(get_db),
+                      email_service: EmailService = Depends(get_email_service), token: str = Depends(oauth2_scheme),
+                      current_user: dict = Depends(require_role(["ADMIN", "MANAGER"]))):
     """
     Create a new user.
 
@@ -145,20 +162,22 @@ async def create_user(user: UserCreate, request: Request, db: AsyncSession = Dep
     existing_user = await UserService.get_by_email(db, user.email)
     if existing_user:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Email already exists")
-    
+
     created_user = await UserService.create(db, user.model_dump(), email_service)
     if not created_user:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to create user")
-    
-    
+
     return UserResponse.model_construct(
         id=created_user.id,
         bio=created_user.bio,
         first_name=created_user.first_name,
         last_name=created_user.last_name,
         profile_picture_url=created_user.profile_picture_url,
+        github_profile_url=created_user.github_profile_url,
+        linkedin_profile_url=created_user.linkedin_profile_url,
         nickname=created_user.nickname,
         email=created_user.email,
+        role=created_user.role,
         last_login_at=created_user.last_login_at,
         created_at=created_user.created_at,
         updated_at=created_user.updated_at,
@@ -168,11 +187,11 @@ async def create_user(user: UserCreate, request: Request, db: AsyncSession = Dep
 
 @router.get("/users/", response_model=UserListResponse, tags=["User Management Requires (Admin or Manager Roles)"])
 async def list_users(
-    request: Request,
-    skip: int = 0,
-    limit: int = 10,
-    db: AsyncSession = Depends(get_db),
-    current_user: dict = Depends(require_role(["ADMIN", "MANAGER"]))
+        request: Request,
+        skip: int = 0,
+        limit: int = 10,
+        db: AsyncSession = Depends(get_db),
+        current_user: dict = Depends(require_role(["ADMIN", "MANAGER"]))
 ):
     total_users = await UserService.count(db)
     users = await UserService.list_users(db, skip, limit)
@@ -180,9 +199,9 @@ async def list_users(
     user_responses = [
         UserResponse.model_validate(user) for user in users
     ]
-    
+
     pagination_links = generate_pagination_links(request, skip, limit, total_users)
-    
+
     # Construct the final response with pagination details
     return UserListResponse(
         items=user_responses,
@@ -194,11 +213,13 @@ async def list_users(
 
 
 @router.post("/register/", response_model=UserResponse, tags=["Login and Registration"])
-async def register(user_data: UserCreate, session: AsyncSession = Depends(get_db), email_service: EmailService = Depends(get_email_service)):
+async def register(user_data: UserCreate, session: AsyncSession = Depends(get_db),
+                   email_service: EmailService = Depends(get_email_service)):
     user = await UserService.register_user(session, user_data.model_dump(), email_service)
     if user:
         return user
     raise HTTPException(status_code=400, detail="Email already exists")
+
 
 @router.post("/login/", response_model=TokenResponse, tags=["Login and Registration"])
 async def login(form_data: OAuth2PasswordRequestForm = Depends(), session: AsyncSession = Depends(get_db)):
@@ -216,6 +237,7 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends(), session: Async
 
         return {"access_token": access_token, "token_type": "bearer"}
     raise HTTPException(status_code=401, detail="Incorrect email or password.")
+
 
 @router.post("/login/", include_in_schema=False, response_model=TokenResponse, tags=["Login and Registration"])
 async def login(form_data: OAuth2PasswordRequestForm = Depends(), session: AsyncSession = Depends(get_db)):
@@ -235,11 +257,13 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends(), session: Async
     raise HTTPException(status_code=401, detail="Incorrect email or password.")
 
 
-@router.get("/verify-email/{user_id}/{token}", status_code=status.HTTP_200_OK, name="verify_email", tags=["Login and Registration"])
-async def verify_email(user_id: UUID, token: str, db: AsyncSession = Depends(get_db), email_service: EmailService = Depends(get_email_service)):
+@router.get("/verify-email/{user_id}/{token}", status_code=status.HTTP_200_OK, name="verify_email",
+            tags=["Login and Registration"])
+async def verify_email(user_id: UUID, token: str, db: AsyncSession = Depends(get_db),
+                       email_service: EmailService = Depends(get_email_service)):
     """
     Verify user's email with a provided token.
-    
+
     - **user_id**: UUID of the user to verify.
     - **token**: Verification token sent to the user's email.
     """
