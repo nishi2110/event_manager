@@ -24,8 +24,7 @@ from uuid import UUID
 from fastapi import APIRouter, Depends, HTTPException, Response, status, Request
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from sqlalchemy.ext.asyncio import AsyncSession
-from app.dependencies import get_current_user, get_db, get_email_service, require_role, get_current_active_user, \
-    get_user_service
+from app.dependencies import get_current_user, get_db, get_email_service, require_role
 from app.schemas.pagination_schema import EnhancedPagination
 from app.schemas.token_schema import TokenResponse
 from app.schemas.user_schemas import LoginRequest, UserBase, UserCreate, UserListResponse, UserResponse, UserUpdate
@@ -273,11 +272,12 @@ async def verify_email(user_id: UUID, token: str, db: AsyncSession = Depends(get
     raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid or expired verification token")
 
 
-@router.put("/users/me", response_model=UserResponse)
+@router.put("/users/updateMyProfile/", response_model=UserResponse)
 async def update_user_profile(update: UserUpdate, db: AsyncSession = Depends(get_db),
-                              current_user=Depends(get_current_active_user)):
+                              current_user=Depends(get_current_user)):
     try:
-        updated_user = await UserService.update_user(db, current_user.id, update)
+        user_data = update.model_dump(exclude_unset=True)
+        updated_user = await UserService.update_user(db, current_user["user_id"], user_data)
         return updated_user
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
