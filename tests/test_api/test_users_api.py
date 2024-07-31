@@ -98,6 +98,34 @@ async def test_create_user_duplicate_email(async_client, verified_user):
 
 
 @pytest.mark.asyncio
+async def test_create_user_sns_test4(async_client, verified_user):
+    user_data = {
+        "email": "john12@example.com",
+        "password": "AnotherPassword123!",
+        "role": UserRole.ADMIN.name,
+        "linkedin_profile_url": "https://linkedin.com/in/johndoe",
+        "github_profile_url": "https://github.com/johndoe"
+    }
+    response = await async_client.post("/register/", json=user_data)
+    assert response.status_code == 200
+    assert "https://linkedin.com/in/johndoe" in response.json().get("linkedin_profile_url", "")
+
+
+@pytest.mark.asyncio
+async def test_create_user_sns_test5(async_client, verified_user):
+    user_data = {
+        "email": "john12@example.com",
+        "password": "AnotherPassword123!",
+        "role": UserRole.ADMIN.name,
+        "linkedin_profile_url": "https://linkedin.com/in/johndoe",
+        "github_profile_url": "https://github.com/johndoe"
+    }
+    response = await async_client.post("/register/", json=user_data)
+    assert response.status_code == 200
+    assert "https://github.com/johndoe" in response.json().get("github_profile_url", "")
+
+
+@pytest.mark.asyncio
 async def test_create_user_invalid_email(async_client):
     user_data = {
         "email": "notanemail",
@@ -191,7 +219,7 @@ async def test_delete_user_does_not_exist(async_client, admin_token):
 
 @pytest.mark.asyncio
 async def test_update_user_github(async_client, admin_user, admin_token):
-    updated_data = {"github_profile_url": "http://www.github.com/kaw393939"}
+    updated_data = {"github_profile_url": "http://www.github.com/KavinDave24"}
     headers = {"Authorization": f"Bearer {admin_token}"}
     response = await async_client.put(f"/users/{admin_user.id}", json=updated_data, headers=headers)
     assert response.status_code == 200
@@ -200,7 +228,7 @@ async def test_update_user_github(async_client, admin_user, admin_token):
 
 @pytest.mark.asyncio
 async def test_update_user_linkedin(async_client, admin_user, admin_token):
-    updated_data = {"linkedin_profile_url": "http://www.linkedin.com/kaw393939"}
+    updated_data = {"linkedin_profile_url": "http://www.linkedin.com/KavinDave24"}
     headers = {"Authorization": f"Bearer {admin_token}"}
     response = await async_client.put(f"/users/{admin_user.id}", json=updated_data, headers=headers)
     assert response.status_code == 200
