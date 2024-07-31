@@ -50,7 +50,7 @@ async def test_create_user_with_valid_data_test7(db_session, email_service):
     user = await UserService.create(db_session, user_data, email_service)
     user1 = await UserService.create(db_session, user_data1, email_service)
     assert user1 is not None
-    print(f'user data {user1}')
+
     assert user1.role == UserRole.ANONYMOUS
 
 

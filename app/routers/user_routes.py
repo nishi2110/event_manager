@@ -24,7 +24,8 @@ from uuid import UUID
 from fastapi import APIRouter, Depends, HTTPException, Response, status, Request
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from sqlalchemy.ext.asyncio import AsyncSession
-from app.dependencies import get_current_user, get_db, get_email_service, require_role
+from app.dependencies import get_current_user, get_db, get_email_service, require_role, get_current_active_user, \
+    get_user_service
 from app.schemas.pagination_schema import EnhancedPagination
 from app.schemas.token_schema import TokenResponse
 from app.schemas.user_schemas import LoginRequest, UserBase, UserCreate, UserListResponse, UserResponse, UserUpdate
@@ -270,3 +271,27 @@ async def verify_email(user_id: UUID, token: str, db: AsyncSession = Depends(get
     if await UserService.verify_email_with_token(db, user_id, token):
         return {"message": "Email verified successfully"}
     raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid or expired verification token")
+
+
+@router.put("/users/me", response_model=UserResponse)
+async def update_user_profile(update: UserUpdate, db: AsyncSession = Depends(get_db),
+                              current_user=Depends(get_current_active_user)):
+    try:
+        updated_user = await UserService.update_user(db, current_user.id, update)
+        return updated_user
+    except Exception as e:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
+
+
+@router.patch("/users/{user_id}/upgrade", response_model=UserResponse)
+async def upgrade_user_to_professional(user_id: UUID, request: Request, db: AsyncSession = Depends(get_db),
+                                       token: str = Depends(oauth2_scheme),
+                                       current_user: dict = Depends(require_role(["ADMIN", "MANAGER"])),
+                                       email_service: EmailService = Depends(get_email_service)):
+    try:
+        updated_user = await UserService.upgrade_to_professional(db, user_id, email_service)
+        if updated_user is None:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='user not found')
+        return updated_user
+    except Exception as e:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))

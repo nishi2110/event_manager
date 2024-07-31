@@ -3,19 +3,23 @@ from fastapi import Depends, HTTPException
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.database import Database
+from app.models.user_model import User
 from app.utils.template_manager import TemplateManager
 from app.services.email_service import EmailService
 from app.services.jwt_service import decode_token
 from settings.config import Settings
 from fastapi import Depends
 
+
 def get_settings() -> Settings:
     """Return application settings."""
     return Settings()
 
+
 def get_email_service() -> EmailService:
     template_manager = TemplateManager()
     return EmailService(template_manager=template_manager)
+
 
 async def get_db() -> AsyncSession:
     """Dependency that provides a database session for each request."""
@@ -25,9 +29,10 @@ async def get_db() -> AsyncSession:
             yield session
         except Exception as e:
             raise HTTPException(status_code=500, detail=str(e))
-        
+
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/login")
+
 
 def get_current_user(token: str = Depends(oauth2_scheme)):
     credentials_exception = HTTPException(
@@ -44,9 +49,37 @@ def get_current_user(token: str = Depends(oauth2_scheme)):
         raise credentials_exception
     return {"user_id": user_id, "role": user_role}
 
+
 def require_role(role: str):
     def role_checker(current_user: dict = Depends(get_current_user)):
         if current_user["role"] not in role:
             raise HTTPException(status_code=403, detail="Operation not permitted")
         return current_user
+
     return role_checker
+
+
+async def get_current_active_user(token: str = Depends(oauth2_scheme), db: AsyncSession = Depends(get_db)) -> User:
+    credentials_exception = HTTPException(
+        status_code=401,
+        detail="Could not validate credentials",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+    payload = decode_token(token)
+    if payload is None:
+        raise credentials_exception
+    user_id: str = payload.get("sub")
+    if user_id is None:
+        raise credentials_exception
+
+    # Fetch user from database
+    user = await db.get(User, user_id)
+    if user is None or not user.is_active:  # assuming `is_active` is a field in your user model
+        raise HTTPException(status_code=404, detail="User not found or inactive")
+
+    return user
+
+
+def get_user_service(db: AsyncSession = Depends(get_db)):
+    from app.services.user_service import UserService  # Import moved inside the function
+    return UserService(db)

@@ -204,8 +204,32 @@ class UserService:
         user = await cls.get_by_id(session, user_id)
         if user and user.is_locked:
             user.is_locked = False
-            user.failed_login_attempts = 0  # Optionally will reset failed login attempts
+            user.failed_login_attempts = 0  # Optionally reset failed login attempts
             session.add(user)
             await session.commit()
             return True
         return False
+
+    @classmethod
+    async def update_user(self, session: AsyncSession, user_id, update_data):
+        user = await self.db.fetch_user(user_id)
+        if user:
+            user.update(update_data)
+            await self.db.commit()
+            return user
+        raise Exception("User not found")
+
+    @classmethod
+    async def upgrade_to_professional(cls, session: AsyncSession, user_id: UUID, email_service: EmailService):
+        user = await cls.get_by_id(session, user_id)
+        email_flag = True
+        if user and user.is_professional == True:
+            email_flag = False
+        if user:
+            user.is_professional = True
+            user.professional_status_updated_at = datetime.now()
+            await session.commit()
+            if email_flag == True:
+                await email_service.send_professional_upgrade_email(user.email)
+            return user
+        return None
