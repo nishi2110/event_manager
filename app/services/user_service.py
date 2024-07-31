@@ -19,6 +19,7 @@ import logging
 settings = get_settings()
 logger = logging.getLogger(__name__)
 
+
 class UserService:
     @classmethod
     async def _execute_query(cls, session: AsyncSession, query):
@@ -50,7 +51,8 @@ class UserService:
         return await cls._fetch_user(session, email=email)
 
     @classmethod
-    async def create(cls, session: AsyncSession, user_data: Dict[str, str], email_service: EmailService) -> Optional[User]:
+    async def create(cls, session: AsyncSession, user_data: Dict[str, str], email_service: EmailService) -> Optional[
+        User]:
         try:
             validated_data = UserCreate(**user_data).model_dump()
             existing_user = await cls.get_by_email(session, validated_data['email'])
@@ -59,29 +61,43 @@ class UserService:
                 return None
             validated_data['hashed_password'] = hash_password(validated_data.pop('password'))
             new_user = User(**validated_data)
-            new_user.verification_token = generate_verification_token()
             new_nickname = generate_nickname()
             while await cls.get_by_nickname(session, new_nickname):
                 new_nickname = generate_nickname()
             new_user.nickname = new_nickname
+            logger.info(f"User Role: {new_user.role}")
+            user_count = await cls.count(session)
+            new_user.role = UserRole.ADMIN if user_count == 0 else UserRole.ANONYMOUS
+            if new_user.role == UserRole.ADMIN:
+                new_user.email_verified = True
+
+            else:
+                new_user.verification_token = generate_verification_token()
+
             session.add(new_user)
             await session.commit()
-            await email_service.send_verification_email(new_user)
-            
+            if new_user.email_verified == False:
+                await email_service.send_verification_email(new_user)
             return new_user
         except ValidationError as e:
             logger.error(f"Validation error during user creation: {e}")
             return None
 
     @classmethod
-    async def update(cls, session: AsyncSession, user_id: UUID, update_data: Dict[str, str]) -> Optional[User]:
+    async def update(cls, session: AsyncSession, email_id, user_id: UUID, update_data: Dict[str, str]) -> Optional[
+        User]:
         try:
             # validated_data = UserUpdate(**update_data).dict(exclude_unset=True)
-            validated_data = UserUpdate(**update_data).dict(exclude_unset=True)
-
+            validated_data = UserUpdate(**update_data).model_dump(exclude_unset=True)
+            if email_id:
+                existing_data = await cls.get_by_email(session, email_id)
+                print(f'existing data{existing_data}')
+                if existing_data.id != user_id:
+                    return 'email_exist'
             if 'password' in validated_data:
                 validated_data['hashed_password'] = hash_password(validated_data.pop('password'))
-            query = update(User).where(User.id == user_id).values(**validated_data).execution_options(synchronize_session="fetch")
+            query = update(User).where(User.id == user_id).values(**validated_data).execution_options(
+                synchronize_session="fetch")
             await cls._execute_query(session, query)
             updated_user = await cls.get_by_id(session, user_id)
             if updated_user:
@@ -114,7 +130,6 @@ class UserService:
     @classmethod
     async def register_user(cls, session: AsyncSession, user_data: Dict[str, str], get_email_service) -> Optional[User]:
         return await cls.create(session, user_data, get_email_service)
-    
 
     @classmethod
     async def login_user(cls, session: AsyncSession, email: str, password: str) -> Optional[User]:
@@ -142,7 +157,6 @@ class UserService:
     async def is_account_locked(cls, session: AsyncSession, email: str) -> bool:
         user = await cls.get_by_email(session, email)
         return user.is_locked if user else False
-
 
     @classmethod
     async def reset_password(cls, session: AsyncSession, user_id: UUID, new_password: str) -> bool:
@@ -181,7 +195,7 @@ class UserService:
         result = await session.execute(query)
         count = result.scalar()
         return count
-    
+
     @classmethod
     async def unlock_user_account(cls, session: AsyncSession, user_id: UUID) -> bool:
         user = await cls.get_by_id(session, user_id)

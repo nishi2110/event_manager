@@ -31,5 +31,12 @@ class PaginationLink(BaseModel):
 class EnhancedPagination(Pagination):
     links: List[PaginationLink] = []
 
-    def add_link(self, rel: str, href: str):
-        self.links.append(PaginationLink(rel=rel, href=href))
+    def add_link(self, rel: str, href: HttpUrl, method: Optional[str] = "GET"):
+        """
+        Adds a new pagination link.
+
+        :param rel: Relationship type (e.g., "next", "prev").
+        :param href: URL for the link.
+        :param method: HTTP method for the link (default: "GET").
+        """
+        self.links.append(PaginationLink(rel=rel, href=href, method=method))
