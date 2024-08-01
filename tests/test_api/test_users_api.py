@@ -76,6 +76,29 @@ async def test_update_user_email_access_allowed_test3(async_client, admin_user, 
 
 
 @pytest.mark.asyncio
+async def test_update_professional_status_allowed_test8(async_client, admin_user, admin_token):
+    headers = {"Authorization": f"Bearer {admin_token}"}
+    response = await async_client.patch(f"/users/{admin_user.id}/upgrade", headers=headers)
+    assert response.status_code == 200
+    assert response.json()["is_professional"] == True
+
+
+@pytest.mark.asyncio
+async def test_update_professional_status_not_allowed_test9(async_client, admin_user, user_token):
+    headers = {"Authorization": f"Bearer {user_token}"}
+    response = await async_client.patch(f"/users/{admin_user.id}/upgrade", headers=headers)
+    assert response.status_code == 403
+
+
+@pytest.mark.asyncio
+async def test_update_professional_status_allowed_test11(async_client, admin_user, manager_token):
+    headers = {"Authorization": f"Bearer {manager_token}"}
+    response = await async_client.patch(f"/users/{admin_user.id}/upgrade", headers=headers)
+    assert response.status_code == 200
+    assert response.json()["is_professional"] == True
+
+
+@pytest.mark.asyncio
 async def test_delete_user(async_client, admin_user, admin_token):
     headers = {"Authorization": f"Bearer {admin_token}"}
     delete_response = await async_client.delete(f"/users/{admin_user.id}", headers=headers)
@@ -100,7 +123,7 @@ async def test_create_user_duplicate_email(async_client, verified_user):
 @pytest.mark.asyncio
 async def test_create_user_sns_test4(async_client, verified_user):
     user_data = {
-        "email": "john12@example.com",
+        "email": "hohn12@example.com",
         "password": "AnotherPassword123!",
         "role": UserRole.ADMIN.name,
         "linkedin_profile_url": "https://linkedin.com/in/johndoe",
@@ -114,7 +137,7 @@ async def test_create_user_sns_test4(async_client, verified_user):
 @pytest.mark.asyncio
 async def test_create_user_sns_test5(async_client, verified_user):
     user_data = {
-        "email": "john12@example.com",
+        "email": "hohn16@example.com",
         "password": "AnotherPassword123!",
         "role": UserRole.ADMIN.name,
         "linkedin_profile_url": "https://linkedin.com/in/johndoe",
