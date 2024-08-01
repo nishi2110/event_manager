@@ -60,6 +60,7 @@ class UserUpdate(UserBase):
 
     @validator('linkedin_profile_url', 'profile_picture_url', 'github_profile_url', pre=True, always=True)
     def empty_string_to_none(cls, v):
+        v = v.strip() if isinstance(v, str) else v
         return None if v == "" else v
 
 
