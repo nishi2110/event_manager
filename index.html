@@ -3,109 +3,106 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Therapy Practice</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+    <title>Simple Todo App</title>
+    <style>
+        .completed {
+            text-decoration: line-through;
+            color: #888;
+        }
+        .todo-item {
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
+        }
+        .delete-btn {
+            margin-left: 10px;
+            color: red;
+            cursor: pointer;
+        }
+    </style>
 </head>
 <body>
-    <!-- Header Section -->
-    <header class="bg-blue-500 text-white p-4">
-        <nav class="container mx-auto flex justify-between">
-            <a href="#" class="text-3xl font-bold">Therapy Practice</a>
-            <ul class="flex justify-end">
-                <li class="mr-4"><a href="#" class="text-lg">About Us</a></li>
-                <li class="mr-4"><a href="#" class="text-lg">Coaches</a></li>
-                <li class="mr-4"><a href="#" class="text-lg">Services</a></li>
-                <li><a href="#" class="text-lg">Contact</a></li>
-            </ul>
-        </nav>
-    </header>
-    <!-- Hero Section -->
-    <section class="bg-cover bg-center h-screen" style="background-image: url('https://picsum.photos/2000/1000')">
-        <div class="container mx-auto p-4 pt-6 md:p-6 lg:p-12 xl:p-24 flex justify-center items-center">
-            <div class="text-center">
-                <h1 class="text-5xl text-white font-bold">Find Your Inner Peace</h1>
-                <button class="bg-orange-500 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded">Get Started</button>
-            </div>
+    <div class="container">
+        <h1>Todo List</h1>
+        <div class="input-section">
+            <input type="text" id="todoInput" placeholder="Enter a new task">
+            <button onclick="addTodo()">Add Task</button>
         </div>
-    </section>
-    <!-- About Us Section -->
-    <section class="bg-white p-4 md:p-6 lg:p-12 xl:p-24">
-        <div class="container mx-auto">
-            <h2 class="text-3xl font-bold">About Us</h2>
-            <p class="text-lg">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed sit amet nulla auctor, vestibulum magna sed, convallis ex.</p>
-        </div>
-    </section>
-    <!-- Coaches Section -->
-    <section class="bg-gray-100 p-4 md:p-6 lg:p-12 xl:p-24">
-        <div class="container mx-auto">
-            <h2 class="text-3xl font-bold">Our Coaches</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-                <div class="bg-white p-4 shadow-md">
-                    <img src="https://picsum.photos/200/300" alt="Coach 1" class="rounded-full w-full h-full object-cover">
-                    <h3 class="text-lg font-bold">Coach 1</h3>
-                    <p class="text-lg">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
-                    <button class="bg-orange-500 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded">Book Now</button>
-                </div>
-                <div class="bg-white p-4 shadow-md">
-                    <img src="https://picsum.photos/200/301" alt="Coach 2" class="rounded-full w-full h-full object-cover">
-                    <h3 class="text-lg font-bold">Coach 2</h3>
-                    <p class="text-lg">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
-                    <button class="bg-orange-500 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded">Book Now</button>
-                </div>
-                <div class="bg-white p-4 shadow-md">
-                    <img src="https://picsum.photos/200/302" alt="Coach 3" class="rounded-full w-full h-full object-cover">
-                    <h3 class="text-lg font-bold">Coach 3</h3>
-                    <p class="text-lg">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
-                    <button class="bg-orange-500 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded">Book Now</button>
-                </div>
-            </div>
-        </div>
-    </section>
-    <!-- Services Section -->
-    <section class="bg-white p-4 md:p-6 lg:p-12 xl:p-24">
-        <div class="container mx-auto">
-            <h2 class="text-3xl font-bold">Our Services</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-                <div class="bg-white p-4 shadow-md">
-                    <img src="https://picsum.photos/200/300" alt="Service 1" class="rounded-full w-full h-full object-cover">
-                    <h3 class="text-lg font-bold">Service 1</h3>
-                    <p class="text-lg">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
-                </div>
-                <div class="bg-white p-4 shadow-md">
-                    <img src="https://picsum.photos/200/301" alt="Service 2" class="rounded-full w-full h-full object-cover">
-                    <h3 class="text-lg font-bold">Service 2</h3>
-                    <p class="text-lg">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
-                </div>
-                <div class="bg-white p-4 shadow-md">
-                    <img src="https://picsum.photos/200/302" alt="Service 3" class="rounded-full w-full h-full object-cover">
-                    <h3 class="text-lg font-bold">Service 3</h3>
-                    <p class="text-lg">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-    <!-- Contact Section -->
-    <section class="bg-gray-100 p-4 md:p-6 lg:p-12 xl:p-24">
-        <div class="container mx-auto">
-            <h2 class="text-3xl font-bold">Get in Touch</h2>
-            <form>
-                <input type="text" placeholder="Name" class="w-full p-2 mb-4">
-                <input type="email" placeholder="Email" class="w-full p-2 mb-4">
-                <textarea placeholder="Message" class="w-full p-2 mb-4"></textarea>
-                <button class="bg-orange-500 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded">Send</button>
-            </form>
-        </div>
-    </section>
-    <!-- Footer Section -->
-    <footer class="bg-blue-500 text-white p-4">
-        <div class="container mx-auto flex justify-between">
-            <p>&copy; 2023 Therapy Practice</p>
-            <ul class="flex justify-end">
-                <li class="mr-4"><a href="#" class="text-lg">Facebook</a></li>
-                <li class="mr-4"><a href="#" class="text-lg">Twitter</a></li>
-                <li class="mr-4"><a href="#" class="text-lg">Instagram</a></li>
-            </ul>
-        </div>
-    </footer>
+        <ul id="todoList"></ul>
+    </div>
+
+    <script>
+        let todos = [];
+
+        function addTodo() {
+            const input = document.getElementById('todoInput');
+            const text = input.value.trim();
+            
+            if (text) {
+                const todo = {
+                    id: Date.now(),
+                    text: text,
+                    completed: false
+                };
+                
+                todos.push(todo);
+                input.value = '';
+                renderTodos();
+            }
+        }
+
+        function toggleTodo(id) {
+            todos = todos.map(todo => {
+                if (todo.id === id) {
+                    return { ...todo, completed: !todo.completed };
+                }
+                return todo;
+            });
+            renderTodos();
+        }
+
+        function deleteTodo(id) {
+            todos = todos.filter(todo => todo.id !== id);
+            renderTodos();
+        }
+
+        function renderTodos() {
+            const todoList = document.getElementById('todoList');
+            todoList.innerHTML = '';
+            
+            todos.forEach(todo => {
+                const li = document.createElement('li');
+                li.className = 'todo-item';
+                
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.checked = todo.completed;
+                checkbox.onclick = () => toggleTodo(todo.id);
+                
+                const span = document.createElement('span');
+                span.textContent = todo.text;
+                if (todo.completed) {
+                    span.className = 'completed';
+                }
+                
+                const deleteBtn = document.createElement('span');
+                deleteBtn.textContent = '×';
+                deleteBtn.className = 'delete-btn';
+                deleteBtn.onclick = () => deleteTodo(todo.id);
+                
+                li.appendChild(checkbox);
+                li.appendChild(span);
+                li.appendChild(deleteBtn);
+                todoList.appendChild(li);
+            });
+        }
+
+        // Allow adding todos with Enter key
+        document.getElementById('todoInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                addTodo();
+            }
+        });
+    </script>
 </body>
 </html>
