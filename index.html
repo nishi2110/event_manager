@@ -19,11 +19,29 @@
             color: red;
             cursor: pointer;
         }
+        .filter-section {
+            margin: 20px 0;
+        }
+        .filter-section button {
+            margin-right: 10px;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+        .filter-section button.active {
+            background-color: #007bff;
+            color: white;
+            border: none;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Todo List</h1>
+        <div class="filter-section">
+            <button onclick="setFilter('all')" id="allFilter">All</button>
+            <button onclick="setFilter('active')" id="activeFilter">Active</button>
+            <button onclick="setFilter('completed')" id="completedFilter">Completed</button>
+        </div>
         <div class="input-section">
             <input type="text" id="todoInput" placeholder="Enter a new task">
             <button onclick="addTodo()">Add Task</button>
@@ -32,7 +50,8 @@
     </div>
 
     <script>
-        let todos = [];
+        let todos = JSON.parse(localStorage.getItem('todos')) || [];
+        let currentFilter = 'all';
 
         function addTodo() {
             const input = document.getElementById('todoInput');
@@ -47,6 +66,7 @@
                 
                 todos.push(todo);
                 input.value = '';
+                saveTodos();
                 renderTodos();
             }
         }
@@ -58,6 +78,7 @@
                 }
                 return todo;
             });
+            saveTodos();
             renderTodos();
         }
 
@@ -66,11 +87,30 @@
             renderTodos();
         }
 
+        function setFilter(filter) {
+            currentFilter = filter;
+            document.querySelectorAll('.filter-section button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.getElementById(filter + 'Filter').classList.add('active');
+            renderTodos();
+        }
+
+        function saveTodos() {
+            localStorage.setItem('todos', JSON.stringify(todos));
+        }
+
         function renderTodos() {
             const todoList = document.getElementById('todoList');
             todoList.innerHTML = '';
             
-            todos.forEach(todo => {
+            const filteredTodos = todos.filter(todo => {
+                if (currentFilter === 'active') return !todo.completed;
+                if (currentFilter === 'completed') return todo.completed;
+                return true;
+            });
+            
+            filteredTodos.forEach(todo => {
                 const li = document.createElement('li');
                 li.className = 'todo-item';
                 
@@ -103,6 +143,9 @@
                 addTodo();
             }
         });
+
+        // Initialize the filter
+        setFilter('all');
     </script>
 </body>
 </html>
