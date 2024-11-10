@@ -67,7 +67,7 @@ class UserService:
             session.add(new_user)
             await session.commit()
             await email_service.send_verification_email(new_user)
-            
+
             return new_user
         except ValidationError as e:
             logger.error(f"Validation error during user creation: {e}")
@@ -114,13 +114,14 @@ class UserService:
     @classmethod
     async def register_user(cls, session: AsyncSession, user_data: Dict[str, str], get_email_service) -> Optional[User]:
         return await cls.create(session, user_data, get_email_service)
-    
+
 
     @classmethod
     async def login_user(cls, session: AsyncSession, email: str, password: str) -> Optional[User]:
         user = await cls.get_by_email(session, email)
         if user:
             if user.email_verified is False:
+                print(user.email_verified)
                 return None
             if user.is_locked:
                 return None
@@ -181,7 +182,7 @@ class UserService:
         result = await session.execute(query)
         count = result.scalar()
         return count
-    
+
     @classmethod
     async def unlock_user_account(cls, session: AsyncSession, user_id: UUID) -> bool:
         user = await cls.get_by_id(session, user_id)

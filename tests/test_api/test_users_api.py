@@ -92,7 +92,7 @@ async def test_login_success(async_client, verified_user):
         "password": "MySuperPassword$1234"
     }
     response = await async_client.post("/login/", data=urlencode(form_data), headers={"Content-Type": "application/x-www-form-urlencoded"})
-    
+
     # Check for successful login response
     assert response.status_code == 200
     data = response.json()
