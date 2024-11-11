@@ -266,8 +266,21 @@ def login_request_data():
 
 @pytest.fixture
 def user_token():
-    access_token_expires = timedelta(minutes=settings.access_token_expire_minutes)
     access_token = create_access_token(
         data={"sub": "john_doe_123", "role": "AUTHENTICATED"},
+    )
+    return access_token
+
+@pytest.fixture
+def admin_token():
+    access_token = create_access_token(
+        data={"sub": "john_doe_123", "role": "ADMIN"},
+    )
+    return access_token
+
+@pytest.fixture
+def manager_token():
+    access_token = create_access_token(
+        data={"sub": "john_doe_123", "role": "manager"},
     )
     return access_token
