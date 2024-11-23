@@ -33,6 +33,17 @@ class UserBase(BaseModel):
     github_profile_url: Optional[str] = Field(None, example="https://github.com/johndoe")
 
     _validate_urls = validator('profile_picture_url', 'linkedin_profile_url', 'github_profile_url', pre=True, allow_reuse=True)(validate_url)
+
+    @validator("nickname")
+    def validate_nickname(cls, value):
+        if value:
+            if not re.match(r"^[a-zA-Z0-9_-]{3,20}$", value):
+                raise ValueError("Nickname must be 3-20 characters long and can only contain letters, numbers, underscores, and hyphens.")
+            # Example uniqueness check (pseudo-code; replace with actual DB check)
+            # if db.nickname_exists(value):
+            #     raise ValueError("Nickname already exists. Please choose another.")
+        return value
+
  
     class Config:
         from_attributes = True
