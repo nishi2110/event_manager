@@ -55,6 +55,14 @@ class UserCreate(UserBase):
     email: EmailStr = Field(..., example="john.doe@example.com")
     password: str = Field(..., example="Secure*1234")
 
+    @validator("password")
+    def validate_password(cls, value):
+        if not re.match(r"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$", value):
+            raise ValueError(
+                "Password must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, one number, and one special character."
+            )
+        return hash_password(value)
+
 class UserUpdate(UserBase):
     email: Optional[EmailStr] = Field(None, example="john.doe@example.com")
     nickname: Optional[str] = Field(None, min_length=3, pattern=r'^[\w-]+$', example="john_doe123")
