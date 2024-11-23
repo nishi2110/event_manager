@@ -38,8 +38,8 @@ class Settings(BaseSettings):
     # Email settings for Mailtrap
     smtp_server: str = Field(default='smtp.mailtrap.io', description="SMTP server for sending emails")
     smtp_port: int = Field(default=2525, description="SMTP port for sending emails")
-    smtp_username: str = Field(default='28f43ce7013bfb', description="Username for SMTP server")
-    smtp_password: str = Field(default='89aa21b2290985', description="Password for SMTP server")
+    smtp_username: str = Field(default='your-mailtrap-username', description="Username for SMTP server")
+    smtp_password: str = Field(default='your-mailtrap-password', description="Password for SMTP server")
     smtp_timeout: int = Field(default=60, description="SMTP connection timeout in seconds")
 
 
