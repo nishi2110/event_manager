@@ -39,9 +39,12 @@ class UserBase(BaseModel):
         if value:
             if not re.match(r"^[a-zA-Z0-9_-]{3,20}$", value):
                 raise ValueError("Nickname must be 3-20 characters long and can only contain letters, numbers, underscores, and hyphens.")
-            # Example uniqueness check (pseudo-code; replace with actual DB check)
-            # if db.nickname_exists(value):
-            #     raise ValueError("Nickname already exists. Please choose another.")
+        return value
+
+    @validator("bio", pre=True, always=True)
+    def validate_bio(cls, value):
+        if value and len(value) > 500:
+            raise ValueError("Bio must not exceed 500 characters.")
         return value
 
  
