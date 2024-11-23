@@ -55,6 +55,14 @@ class UserCreate(UserBase):
     email: EmailStr = Field(..., example="john.doe@example.com")
     password: str = Field(..., example="Secure*1234")
 
+    @validator("password")
+    def validate_password(cls, value):
+        if not re.match(r"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$", value):
+            raise ValueError(
+                "Password must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, one number, and one special character."
+            )
+        return hash_password(value)
+
 class UserUpdate(UserBase):
     email: Optional[EmailStr] = Field(None, example="john.doe@example.com")
     nickname: Optional[str] = Field(None, min_length=3, pattern=r'^[\w-]+$', example="john_doe123")
@@ -65,10 +73,14 @@ class UserUpdate(UserBase):
     linkedin_profile_url: Optional[str] =Field(None, example="https://linkedin.com/in/johndoe")
     github_profile_url: Optional[str] = Field(None, example="https://github.com/johndoe")
 
-    @root_validator(pre=True)
+     @root_validator(pre=True)
     def check_at_least_one_value(cls, values):
-        if not any(values.values()):
-            raise ValueError("At least one field must be provided for update")
+        if not any(values.get(field) for field in values):
+            raise ValueError("At least one field must be provided for update.")
+        # Additional validation for URLs
+        for field in ['profile_picture_url', 'linkedin_profile_url', 'github_profile_url']:
+            if values.get(field) and not validate_url(values[field]):
+                raise ValueError(f"Invalid URL for {field}.")
         return values
 
 class UserResponse(UserBase):
