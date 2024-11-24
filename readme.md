@@ -1,8 +1,13 @@
-
-
-  - Links to the closed issues, providing easy access to your work. :
-     **GitHub Repository Link**: https://github.com/njit-dl92/event_manager 
-  - **Links to closed issues** : https://github.com/njit-dl92/event_manager/issues?q=is%3Aissue+is%3Aclosed 
+**GitHub Repository Link**: https://github.com/njit-dl92/event_manager 
+  - **Links to closed issues** : https://github.com/njit-dl92/event_manager/issues?q=is%3Aissue+is%3Aclosed
+      Below are the issues I resolved :
+          1. Cannot create User due to email validation issue
+          2. Resolve 500 Internal error for register and login
+          3. Validation for URL
+          4. Add validation for password
+          5. Add validation for bio
+          6. Add Validation for nick name
+          7. Fix default user role
   - **Git workflow and best practices** : Created the feature branch as feature/fix-issues, tested each issue with this branch. Created pull request once tested and merged in main branch : https://github.com/njit-dl92/event_manager/pulls?q=is%3Apr+is%3Aclosed
 
   - Link to project image deployed to Docker:
