@@ -2,7 +2,7 @@
 
   - Links to the closed issues, providing easy access to your work. :
      **GitHub Repository Link**: https://github.com/njit-dl92/event_manager 
-  - **Links to five closed issues** : https://github.com/njit-dl92/event_manager/issues?q=is%3Aissue+is%3Aclosed 
+  - **Links to closed issues** : https://github.com/njit-dl92/event_manager/issues?q=is%3Aissue+is%3Aclosed 
   - **Git workflow and best practices** : Created the feature branch as feature/fix-issues, tested each issue with this branch. Created pull request once tested and merged in main branch : https://github.com/njit-dl92/event_manager/pulls?q=is%3Apr+is%3Aclosed
 
   - Link to project image deployed to Docker:
