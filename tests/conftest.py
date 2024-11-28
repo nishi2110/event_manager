@@ -54,6 +54,25 @@ def email_service():
     return email_service
 
 
+@pytest.fixture
+def user_token(verified_user):
+    # Generate a token with USER role
+    return create_access_token(data={"sub": str(verified_user.id), "role": "USER"})
+
+
+@pytest.fixture
+def admin_token(admin_user):
+    # Generate a token with the admin role
+    return create_access_token(data={"sub": str(admin_user.id), "role": "ADMIN"})
+
+
+@pytest.fixture
+def manager_token(manager_user):
+    # Generate a token with the MANAGER role
+    return create_access_token(data={"sub": str(manager_user.id), "role": "MANAGER"})
+
+
+
 # this is what creates the http client for your api tests
 @pytest.fixture(scope="function")
 async def async_client(db_session):
@@ -241,7 +260,8 @@ def user_create_data(user_base_data):
 def user_update_data():
     return {
         "email": "john.doe.new@example.com",
-        "full_name": "John H. Doe",
+        "first_name": "John",
+        "last_name": "Doe",
         "bio": "I specialize in backend development with Python and Node.js.",
         "profile_picture_url": "https://example.com/profile_pictures/john_doe_updated.jpg"
     }
@@ -249,7 +269,7 @@ def user_update_data():
 @pytest.fixture
 def user_response_data():
     return {
-        "id": "unique-id-string",
+        "id": uuid4(),
         "username": "testuser",
         "email": "test@example.com",
         "last_login_at": datetime.now(),
