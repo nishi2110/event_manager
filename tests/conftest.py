@@ -54,6 +54,13 @@ def email_service():
     return email_service
 
 
+@pytest.fixture
+def user_token(verified_user):
+    # Generate a token with USER role
+    return create_access_token(data={"sub": str(verified_user.id), "role": "USER"})
+
+
+
 # this is what creates the http client for your api tests
 @pytest.fixture(scope="function")
 async def async_client(db_session):
