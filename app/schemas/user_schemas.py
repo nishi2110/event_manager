@@ -75,8 +75,12 @@ class UserUpdate(UserBase):
 
     @root_validator(pre=True)
     def check_at_least_one_value(cls, values):
-        if not any(values.values()):
-            raise ValueError("At least one field must be provided for update")
+        if not any(values.get(field) for field in values):
+            raise ValueError("At least one field must be provided for update.")
+        # Additional validation for Profile URLs
+        for field in ['profile_picture_url', 'linkedin_profile_url', 'github_profile_url']:
+            if values.get(field) and not validate_url(values[field]):
+                raise ValueError(f"Invalid URL for {field}.")
         return values
 
 class UserResponse(UserBase):
