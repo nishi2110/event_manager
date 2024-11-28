@@ -41,3 +41,16 @@ def test_login_request_valid():
     login = LoginRequest(**login_request_data)
     assert login.email == login_request_data["email"]
     assert login.password == login_request_data["password"]
+
+# Valid email tests
+@pytest.mark.parametrize("email", [
+    "john.doe@example.com",  # Standard format
+    "user+alias@sub.domain.org",  # With alias and subdomain
+    "user_name123@domain.co",  # With underscore and numbers
+    "123user@domain.com",  # Starting with numbers
+    "user.name@domain.travel",  # Non-standard TLD
+])
+def test_user_base_valid_email(email,user_base_data):
+    user_base_data["email"] = email
+    user = UserBase(**user_base_data)
+    assert user.email == email
