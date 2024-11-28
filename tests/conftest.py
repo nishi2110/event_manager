@@ -60,6 +60,18 @@ def user_token(verified_user):
     return create_access_token(data={"sub": str(verified_user.id), "role": "USER"})
 
 
+@pytest.fixture
+def admin_token(admin_user):
+    # Generate a token with the admin role
+    return create_access_token(data={"sub": str(admin_user.id), "role": "ADMIN"})
+
+
+@pytest.fixture
+def manager_token(manager_user):
+    # Generate a token with the MANAGER role
+    return create_access_token(data={"sub": str(manager_user.id), "role": "MANAGER"})
+
+
 
 # this is what creates the http client for your api tests
 @pytest.fixture(scope="function")
