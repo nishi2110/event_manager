@@ -33,6 +33,20 @@ class UserBase(BaseModel):
     github_profile_url: Optional[str] = Field(None, example="https://github.com/johndoe")
 
     _validate_urls = validator('profile_picture_url', 'linkedin_profile_url', 'github_profile_url', pre=True, allow_reuse=True)(validate_url)
+
+    @validator("nickname")
+    def validate_nickname(cls, value):
+        if value:
+            if not re.match(r"^[a-zA-Z0-9_-]{3,20}$", value):
+                raise ValueError("Nickname must be 3-20 characters long and can only contain letters, numbers, underscores, and hyphens.")
+        return value
+
+    @validator("bio", pre=True, always=True)
+    def validate_bio(cls, value):
+        if value and len(value) > 500:
+            raise ValueError("Bio must not exceed 500 characters.")
+        return value
+
  
     class Config:
         from_attributes = True
@@ -40,6 +54,14 @@ class UserBase(BaseModel):
 class UserCreate(UserBase):
     email: EmailStr = Field(..., example="john.doe@example.com")
     password: str = Field(..., example="Secure*1234")
+
+    @validator("password")
+    def validate_password(cls, value):
+        if not re.match(r"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$", value):
+            raise ValueError(
+                "Password must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, one number, and one special character."
+            )
+        return hash_password(value)
 
 class UserUpdate(UserBase):
     email: Optional[EmailStr] = Field(None, example="john.doe@example.com")
@@ -53,8 +75,12 @@ class UserUpdate(UserBase):
 
     @root_validator(pre=True)
     def check_at_least_one_value(cls, values):
-        if not any(values.values()):
-            raise ValueError("At least one field must be provided for update")
+        if not any(values.get(field) for field in values):
+            raise ValueError("At least one field must be provided for update.")
+        # Additional validation for URLs
+        for field in ['profile_picture_url', 'linkedin_profile_url', 'github_profile_url']:
+            if values.get(field) and not validate_url(values[field]):
+                raise ValueError(f"Invalid URL for {field}.")
         return values
 
 class UserResponse(UserBase):

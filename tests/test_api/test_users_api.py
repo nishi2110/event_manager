@@ -189,3 +189,38 @@ async def test_list_users_unauthorized(async_client, user_token):
         headers={"Authorization": f"Bearer {user_token}"}
     )
     assert response.status_code == 403  # Forbidden, as expected for regular user
+
+
+@pytest.mark.asyncio
+async def test_create_user2(async_client):
+    form_data = {
+        "username": "admin",
+        "password": "secret",
+    }
+    # Login and get the access token
+    token_response = await async_client.post("/token", data=form_data)
+    access_token = token_response.json()["access_token"]
+    headers = {"Authorization": f"Bearer {access_token}"}
+
+    # Define user data for the test
+    user_data1 = {
+        "username": "testuser",
+        "email": "test@example.com",
+        "password": "sS#fdasrongPassword123!",
+    }
+
+    # Send a POST request to create a user
+    response = await async_client.post("/users/", json=user_data1, headers=headers)
+
+    # Define user data for the test
+    user_data2 = {
+        "username": "testuser3",
+        "email": "test@example.com",
+        "password": "sS#fdasrongPassword123!",
+    }
+
+    # Send a POST request to create a user
+    response2 = await async_client.post("/users/", json=user_data2, headers=headers)
+
+    # Asserts
+    assert response2.status_code == 400
