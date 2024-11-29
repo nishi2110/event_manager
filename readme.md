@@ -19,7 +19,7 @@ Link : https://github.com/MallikaKasi/IS601-Fall2024-Homework10-event_manager/is
 
 ### Fixed the Password validation Issue: Added validation for the password to meet the mandatory minimum length and to have at least one upper case, lower case, numbers, and special character.
 
-Link :[ ](https://github.com/MallikaKasi/IS601-Fall2024-Homework10-event_manager/issues/6)
+Link : https://github.com/MallikaKasi/IS601-Fall2024-Homework10-event_manager/issues/6
 
 ### Added the Additional validation while adding profile urlsand the necessary test case.
 
