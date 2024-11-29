@@ -1,3 +1,6 @@
+## Homework 10 : Event Manager Company: Software QA Analyst/Developer Onboarding Assignment
+
+This repository contains fixes for several issues as per instructor videos and course material.
 
 ## Description and Links to the Closed Issue:
 
