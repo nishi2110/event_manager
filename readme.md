@@ -1,32 +1,31 @@
 
-### Description and Links to the Closed Issue:
+## Description and Links to the Closed Issue:
 
-## Fixed the Missing test fixtures and mismatched conftest data by creating fixtures to generate user, admin and manager tokens 
-Also fixed issues with standardization of data in conftest.py
-
-Link : https://github.com/MallikaKasi/IS601-Fall2024-Homework10-event_manager/issues/1
-
-## Fixed Pytest Errors with JWT Token and Sendemail by creating a new inbox in Mailtrap.Added the username and password credentials to the .env file.
+### Fixed the Missing test fixtures and mismatched conftest data by creating fixtures to generate user, admin and manager tokens.Also fixed issues with standardization of data in conftest.py
 
 Link : https://github.com/MallikaKasi/IS601-Fall2024-Homework10-event_manager/issues/1
 
-## Fixed the Auto generating nickname mismatch issue. While Registering Nickname is replaced by an auto generated one and getting updated to the database. This issue is resolved by replacing the manually generated nickname that will be passed as an argument to the generate_nickname method.
+### Fixed Pytest Errors with JWT Token and Sendemail by creating a new inbox in Mailtrap.Added the username and password credentials to the .env file.
+
+Link : https://github.com/MallikaKasi/IS601-Fall2024-Homework10-event_manager/issues/1
+
+### Fixed the Auto generating nickname mismatch issue. While Registering Nickname is replaced by an auto generated one and getting updated to the database. This issue is resolved by replacing the manually generated nickname that will be passed as an argument to the generate_nickname method.
 
 Link : https://github.com/MallikaKasi/IS601-Fall2024-Homework10-event_manager/issues/2
 
-## Fixed the Nickname Duplicate logic: When registering a new user, duplicate Nicknames are allowed. So added the logic to check and make sure Nicknames are unique.
+### Fixed the Nickname Duplicate logic: When registering a new user, duplicate Nicknames are allowed. So added the logic to check and make sure Nicknames are unique.
 
 Link : https://github.com/MallikaKasi/IS601-Fall2024-Homework10-event_manager/issues/3
 
-## Fixed the Password validation Issue: Added validation for the password to meet the mandatory minimum length and to have at least one upper case, lower case, numbers, and special character.
+### Fixed the Password validation Issue: Added validation for the password to meet the mandatory minimum length and to have at least one upper case, lower case, numbers, and special character.
 
 Link :[ ](https://github.com/MallikaKasi/IS601-Fall2024-Homework10-event_manager/issues/6)
 
-## Added the Additional validation while adding profile urlsand the necessary test case.
+### Added the Additional validation while adding profile urlsand the necessary test case.
 
 Link : https://github.com/MallikaKasi/IS601-Fall2024-Homework10-event_manager/issues/8
 
-## Fixed the Email validation missing. Email field doesn't check for invalid email addresses like missing @ or missing username or missing domain name, So added the logic to validate the invalid email addresses. 
+### Fixed the Email validation missing. Email field doesn't check for invalid email addresses like missing @ or missing username or missing domain name, So added the logic to validate the invalid email addresses. 
 
 Link : https://github.com/MallikaKasi/IS601-Fall2024-Homework10-event_manager/issues/10
 
