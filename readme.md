@@ -1,45 +1,52 @@
 
-## Specific Issues to Address
+### Description and Links to the Closed Issue:
 
-In this assignment, you will identify, document, and resolve five specific issues related to:
+## Fixed the Missing test fixtures and mismatched conftest data by creating fixtures to generate user, admin and manager tokens 
+Also fixed issues with standardization of data in conftest.py
 
-1. **Username validation**: Investigate and resolve any issues related to username validation. This may involve handling special characters, enforcing length constraints, or ensuring uniqueness. Proper username validation is essential to maintain data integrity and prevent potential security vulnerabilities.
+Link : https://github.com/MallikaKasi/IS601-Fall2024-Homework10-event_manager/issues/1
 
-2. **Password validation**: Ensure that password validation follows security best practices, such as enforcing minimum length, requiring complexity (e.g., a mix of uppercase, lowercase, numbers, and special characters), and properly hashing passwords before storing them in the database. Robust password validation protects user accounts and mitigates the risk of unauthorized access.
+## Fixed Pytest Errors with JWT Token and Sendemail by creating a new inbox in Mailtrap.Added the username and password credentials to the .env file.
 
-3. **Profile field edge cases**: Test and handle various scenarios related to updating profile fields. This may include updating the bio and profile picture URL simultaneously or individually. Consider different combinations of fields being updated and ensure that the API handles these cases gracefully. Edge case testing helps uncover potential issues and ensures a smooth user experience.
+Link : https://github.com/MallikaKasi/IS601-Fall2024-Homework10-event_manager/issues/1
 
-Additionally, you will resolve a sixth issue demonstrated in the instructor video. These issues will test various combinations and scenarios to simulate real-world usage and potential edge cases. By addressing these specific issues, you will gain experience in identifying and resolving common challenges in API development.
+## Fixed the Auto generating nickname mismatch issue. While Registering Nickname is replaced by an auto generated one and getting updated to the database. This issue is resolved by replacing the manually generated nickname that will be passed as an argument to the generate_nickname method.
 
-## Submission Requirements
+Link : https://github.com/MallikaKasi/IS601-Fall2024-Homework10-event_manager/issues/2
 
-To complete this assignment, submit the following:
+## Fixed the Nickname Duplicate logic: When registering a new user, duplicate Nicknames are allowed. So added the logic to check and make sure Nicknames are unique.
 
-1. **GitHub Repository Link**: Ensure that your repository is well-organized and includes:
-  - Links to five closed issues, each with accompanying test code and necessary application code modifications.
-  - Each issue should be well-documented, explaining the problem, the steps taken to resolve it, and the outcome. Proper documentation helps others understand your work and facilitates future maintenance.
-  - All issues should be merged into the main branch, following the Git workflow and best practices.
+Link : https://github.com/MallikaKasi/IS601-Fall2024-Homework10-event_manager/issues/3
 
-2. **Updated README**: Replace the existing README with:
+## Fixed the Password validation Issue: Added validation for the password to meet the mandatory minimum length and to have at least one upper case, lower case, numbers, and special character.
+
+Link :[ ](https://github.com/MallikaKasi/IS601-Fall2024-Homework10-event_manager/issues/6)
+
+## Added the Additional validation while adding profile urlsand the necessary test case.
+
+Link : https://github.com/MallikaKasi/IS601-Fall2024-Homework10-event_manager/issues/8
+
+## Fixed the Email validation missing. Email field doesn't check for invalid email addresses like missing @ or missing username or missing domain name, So added the logic to validate the invalid email addresses. 
+
+Link : https://github.com/MallikaKasi/IS601-Fall2024-Homework10-event_manager/issues/10
+
+## Pytest Code Coverage
+![image](https://github.com/user-attachments/assets/25a6fb40-ccaa-442b-af1f-0729de329e1e)
+
+![image](https://github.com/user-attachments/assets/7721d502-cf49-4d73-bd88-94eca4c02a78)
+
+
+## Link to project image deployed to Dockerhub
+
+![image](https://github.com/user-attachments/assets/aef25a17-f0c3-49a4-9921-1890deb6a965)
+![image](https://github.com/user-attachments/assets/5731c9e6-effb-4bcd-8f02-49657e5a2898)
+
+### Learning from this Project
+
   - Links to the closed issues, providing easy access to your work.
+  - Test coverage 
   - Link to project image deployed to Dockerhub.
   - A 2-3 paragraph reflection on what you learned from this assignment, focusing on both technical skills and collaborative processes. Reflect on the challenges you faced, the solutions you implemented, and the insights you gained. This reflection helps solidify your learning and provides valuable feedback for improving the assignment in the future.
 
-## Grading Rubric
-
-| Criteria                                                                                                                | Points |
-|-------------------------------------------------------------------------------------------------------------------------|--------|
-| Resolved 5 issues related to username validation, password validation, and profile field edge cases                      | 30     |
-| Resolved the issue demonstrated in the instructor video                                                                 | 20     |
-| Increased test coverage to 90% by writing comprehensive test cases                                                      | 20     |
-| Followed collaborative development practices using Git and GitHub (branching, pull requests, code reviews)              | 15     |
-| Submitted a well-organized GitHub repository with clear documentation, links to closed issues, and a reflective summary | 15     |
-| **Total**                                                                                                               | **100**|
 
 
-
-If you have any questions or need assistance, don't hesitate to reach out to your mentor or team lead. We are here to support you and ensure that you have a rewarding and enriching experience.
-
-Once again, welcome to the Event Manager Company! Let's embark on this exciting journey together and create something remarkable.
-
-Happy coding and happy learning!
