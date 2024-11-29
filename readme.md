@@ -45,10 +45,10 @@ Link : https://github.com/MallikaKasi/IS601-Fall2024-Homework10-event_manager/is
 
 ### Learning from this Project
 
-  - Links to the closed issues, providing easy access to your work.
-  - Test coverage 
-  - Link to project image deployed to Dockerhub.
-  - A 2-3 paragraph reflection on what you learned from this assignment, focusing on both technical skills and collaborative processes. Reflect on the challenges you faced, the solutions you implemented, and the insights you gained. This reflection helps solidify your learning and provides valuable feedback for improving the assignment in the future.
+The assignment provided an exciting opportunity to approach challenges from a QA perspective. Step by step, I explored the user lifecycle of the event manager application, uncovering bugs and gaining a thorough understanding of the codebase. Each issue presented an opportunity to refine or create functions, which enhanced my coding skills.Tackling the assignment through a QA lens was both engaging and insightful. By breaking down the user lifecycle of the event manager application, I uncovered and resolved several issues, refining my understanding of the codebase. This process involved developing new functions and creatively reusing existing ones to address problems efficiently.The assignment was also an exciting mix of challenges and discoveries. Adopting a QA perspective allowed me to systematically explore the user lifecycle in the event manager application, uncovering issues and refining my problem-solving approach. By leveraging existing functions and developing new ones, I gained a much deeper understanding of the codebase.
+
+One of the most enjoyable aspects was working with Docker Compose. It was fascinating to see how microservices communicate internally and to troubleshoot connectivity with tools like pgAdmin. Writing test cases for the newly implemented logic and improving code coverage pushed me to dive even deeper into the application’s functionality. By the end, I felt confident navigating the code and pinpointing areas for future improvements.
+Overall, this experience enhanced my technical and problem-solving skills while reinforcing the value of a structured and detailed approach to development and testing. It also made me appreciate the synergy between QA and development teams in delivering robust applications.
 
 
 
