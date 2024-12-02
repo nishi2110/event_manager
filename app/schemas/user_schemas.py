@@ -23,7 +23,7 @@ def validate_url(url: Optional[str]) -> Optional[str]:
     return url
 
 class UserBase(BaseModel):
-    email: EmailStr = Field(..., example="john.doe@example.com")
+    email: EmailStr = Field(...,pattern=r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$', example="john.doe@example.com")
     nickname: Optional[str] = Field(None, min_length=3, pattern=r'^[\w-]+$', example=generate_nickname())
     first_name: Optional[str] = Field(None, example="John")
     last_name: Optional[str] = Field(None, example="Doe")
@@ -38,11 +38,11 @@ class UserBase(BaseModel):
         from_attributes = True
 
 class UserCreate(UserBase):
-    email: EmailStr = Field(..., example="john.doe@example.com")
+    email: EmailStr = Field(...,pattern=r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$', example="john.doe@example.com")
     password: str = Field(..., example="Secure*1234")
 
 class UserUpdate(UserBase):
-    email: Optional[EmailStr] = Field(None, example="john.doe@example.com")
+    email: Optional[EmailStr] = Field(None,pattern=r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$', example="john.doe@example.com")
     nickname: Optional[str] = Field(None, min_length=3, pattern=r'^[\w-]+$', example="john_doe123")
     first_name: Optional[str] = Field(None, example="John")
     last_name: Optional[str] = Field(None, example="Doe")
@@ -60,13 +60,13 @@ class UserUpdate(UserBase):
 class UserResponse(UserBase):
     id: uuid.UUID = Field(..., example=uuid.uuid4())
     role: UserRole = Field(default=UserRole.AUTHENTICATED, example="AUTHENTICATED")
-    email: EmailStr = Field(..., example="john.doe@example.com")
+    email: EmailStr = Field(...,pattern=r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$', example="john.doe@example.com")
     nickname: Optional[str] = Field(None, min_length=3, pattern=r'^[\w-]+$', example=generate_nickname())    
     role: UserRole = Field(default=UserRole.AUTHENTICATED, example="AUTHENTICATED")
     is_professional: Optional[bool] = Field(default=False, example=True)
 
 class LoginRequest(BaseModel):
-    email: str = Field(..., example="john.doe@example.com")
+    email: str = Field(...,pattern=r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$', example="john.doe@example.com")
     password: str = Field(..., example="Secure*1234")
 
 class ErrorResponse(BaseModel):
