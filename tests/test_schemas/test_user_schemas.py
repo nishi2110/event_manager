@@ -10,6 +10,36 @@ def test_user_base_valid(user_base_data):
     assert user.nickname == user_base_data["nickname"]
     assert user.email == user_base_data["email"]
 
+# Valid email tests
+@pytest.mark.parametrize("email", [
+    "john.doe@example.com",  # Standard format
+    "user+alias@sub.domain.org",  # With alias and subdomain
+    "user_name123@domain.co",  # With underscore and numbers
+    "123user@domain.com",  # Starting with numbers
+    "user.name@domain.travel",  # Non-standard TLD
+])
+def test_user_base_valid_email(email,user_base_data):
+    user_base_data["email"] = email
+    user = UserBase(**user_base_data)
+    assert user.email == email
+# Invalid email tests
+@pytest.mark.parametrize("email,expected_error", [
+    ("plainaddress", "value is not a valid email address"),  # Missing @
+    ("@missingusername.com", "value is not a valid email address"),  # Missing username
+    ("username@.com", "value is not a valid email address"),  # Domain name missing
+    ("username@domain", "value is not a valid email address"),  # No TLD
+    ("username@domain.c", "value is not a valid email address"),  # TLD too short
+    ("username@domain..com", "value is not a valid email address"),  # Double dot in domain
+    ("username@-domain.com", "value is not a valid email address"),  # Domain starts with hyphen
+    ("username@domain.com-", "value is not a valid email address"),  # Domain ends with hyphen
+])
+def test_user_base_invalid_email(email, expected_error, user_base_data):
+    user_base_data["email"] = email
+    with pytest.raises(ValidationError) as exc_info:
+        UserBase(**user_base_data)
+    
+    assert expected_error in str(exc_info.value)
+
 # Tests for UserCreate
 def test_user_create_valid(user_create_data):
     user = UserCreate(**user_create_data)
