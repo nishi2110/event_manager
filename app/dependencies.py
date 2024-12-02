@@ -24,7 +24,7 @@ async def get_db() -> AsyncSession:
         try:
             yield session
         except Exception as e:
-            raise HTTPException(status_code=500, detail=str(e))
+            raise HTTPException(status_code=500, detail=str(e)) from e
         
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/login")
@@ -50,3 +50,4 @@ def require_role(role: str):
             raise HTTPException(status_code=403, detail="Operation not permitted")
         return current_user
     return role_checker
+
