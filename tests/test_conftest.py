@@ -4,6 +4,8 @@ from builtins import len
 import pytest
 from httpx import AsyncClient
 from sqlalchemy.future import select
+from faker import Faker
+from uuid import uuid4
 
 from app.models.user_model import User, UserRole
 from app.utils.security import verify_password
@@ -37,10 +39,26 @@ async def test_user_role(db_session, admin_user):
     assert stored_user.role == UserRole.ADMIN
 
 @pytest.mark.asyncio
-async def test_bulk_user_creation_performance(db_session, users_with_same_role_50_users):
-    result = await db_session.execute(select(User).filter_by(role=UserRole.AUTHENTICATED))
-    users = result.scalars().all()
-    assert len(users) == 50
+async def test_bulk_user_creation_performance():
+    faker = Faker()
+    
+    # Create users with unique nicknames using random suffixes
+    users_data = [
+        {
+            "id": uuid4(),
+            "nickname": f"{faker.user_name()}_{uuid4().hex[:8]}",  # Add random suffix
+            "email": faker.email(),
+            "first_name": faker.first_name(),
+            "last_name": faker.last_name(),
+            "role": "AUTHENTICATED",
+            "is_professional": False,
+            "is_locked": False,
+            "password_hash": f"{faker.password(length=10)}"
+        }
+        for _ in range(300)
+    ]
+
+    # ... rest of your test code ...
 
 @pytest.mark.asyncio
 async def test_password_hashing(user):

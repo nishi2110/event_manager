@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [3.10.12] # Define Python versions here
+        python-version: [3.10.12]
     services:
       postgres:
         image: postgres:latest
@@ -47,13 +47,18 @@ jobs:
           
       - name: Run tests with Pytest
         env:
-          DATABASE_URL: postgresql+asyncpg://user:password@localhost:5432/myappdb  # Configure the DATABASE_URL environment variable for tests
+          DATABASE_URL: postgresql+asyncpg://user:password@127.0.0.1:5432/myappdb
+          SMTP_SERVER: smtp.mailtrap.io
+          SMTP_PORT: 2525
+          SMTP_USERNAME: ${{ secrets.SMTP_USERNAME }}
+          SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
         run: pytest
 
   build-and-push-docker:
     needs: test
     runs-on: ubuntu-latest
     environment: production
+
     steps:
       - uses: actions/checkout@v4
       
@@ -70,16 +75,18 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           push: true
-          tags: kaw393939/wis_club_api:${{ github.sha }} # Uses the Git SHA for tagging
-          platforms: linux/amd64,linux/arm64 # Multi-platform support
-          cache-from: type=registry,ref=kaw393939/wis_club_api:cache
-          cache-to: type=inline,mode=max
+          tags: |
+            saisrinivas194/event_management:latest
+            saisrinivas194/event_management:${{ github.sha }}
+          platforms: linux/amd64,linux/arm64
+          cache-from: type=registry,ref=saisrinivas194/event_management:cache
+          cache-to: type=registry,ref=saisrinivas194/event_management:cache,mode=max
           
       - name: Scan the Docker image
-        uses: aquasecurity/trivy-action@master
+        uses: aquasecurity/trivy-action@v0.11.0
         with:
-          image-ref: 'kaw393939/wis_club_api:${{ github.sha }}'
+          image-ref: 'saisrinivas194/event_management:${{ github.sha }}'
           format: 'table'
-          exit-code: '1' # Fail the job if vulnerabilities are found
+          exit-code: '1'
           ignore-unfixed: true
           severity: 'CRITICAL,HIGH'
