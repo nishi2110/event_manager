@@ -139,9 +139,13 @@ async def create_user(user: UserCreate, request: Request, db: AsyncSession = Dep
     Returns:
     - UserResponse: The newly created user's information along with navigation links.
     """
-    existing_user = await UserService.get_by_email(db, user.email)
-    if existing_user:
+    existing_email = await UserService.get_by_email(db, user.email)
+    if existing_email:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Email already exists")
+    
+    existing_user = await UserService.get_by_nickname(db, user.nickname)
+    if existing_user:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Username already exists")
     
     created_user = await UserService.create(db, user.model_dump(), email_service)
     if not created_user:
@@ -195,7 +199,7 @@ async def register(user_data: UserCreate, session: AsyncSession = Depends(get_db
     user = await UserService.register_user(session, user_data.model_dump(), email_service)
     if user:
         return user
-    raise HTTPException(status_code=400, detail="Email already exists")
+    raise HTTPException(status_code=400, detail="Email or Username already exists")
 
 @router.post("/login/", response_model=TokenResponse, tags=["Login and Registration"])
 async def login(form_data: OAuth2PasswordRequestForm = Depends(), session: AsyncSession = Depends(get_db)):
