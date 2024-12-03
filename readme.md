@@ -18,4 +18,12 @@ Welcome to the Event Manager Company! As a newly hired Software QA Analyst/Devel
 - Creating database migration: docker compose exec fastapi alembic revision --autogenerate -m 'added admin'
 
 ## Issues to Address:
-1. Internal Server Error :
+1. Validation Error :
+ - The errors in tests indicate mismatches between the fields in test data (user_base_data, user_create_data, etc.) and the actual schema definitions (UserBase, UserCreate, UserUpdate, etc.).
+ KeyError: Indicates that the expected keys (nickname, first_name, etc.) are missing from the test data.
+ ValidationError: Indicates that the input data does not match the expected schema.
+
+- Fix Error:
+- change file https://github.com/nisha2110/HW-10_event_manager_final/blob/main/tests/test_schemas/test_user_schemas.py
+- Link https://github.com/nisha2110/HW-10_event_manager_final/blob/main/1-1-validation.PNG
+
