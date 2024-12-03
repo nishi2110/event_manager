@@ -67,3 +67,27 @@ def test_user_base_invalid_email(user_base_data_invalid):
     
     assert "value is not a valid email address" in str(exc_info.value)
     assert "john.doe.example.com" in str(exc_info.value)
+
+# Test cases for valid passwords
+@pytest.mark.parametrize("password", [
+    "Secure*1234",     # Valid: meets all criteria
+    "Another@Pass1",   # Valid: meets all criteria
+    "Strong#456",      # Valid: meets all criteria
+])
+def test_valid_password_creation(password):
+    user = UserCreate(email="johndoe@example.com", password=password)
+    assert user.password == password
+
+
+# Test cases for invalid passwords
+@pytest.mark.parametrize("password, expected_error", [
+    ("12345678", "Password must contain at least one lowercase letter."),  # Missing lowercase letter
+    ("password*", "Password must contain at least one uppercase letter."),  # Missing uppercase letter
+    ("Password123", "Password must contain at least one special character."),  # Missing special character
+    ("Short1*", "Password must be at least 8 characters long."),             # Too short
+])
+def test_invalid_password_creation(password, expected_error):
+    with pytest.raises(ValidationError) as exc_info:
+        UserCreate(email="johndoe@example.com", password=password)
+    
+    assert expected_error in str(exc_info.value)
