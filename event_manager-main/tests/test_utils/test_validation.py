@@ -1,5 +1,6 @@
 import pytest
 from app.utils.validation import validate_nickname, validate_password
+from app.utils.validation import validate_nickname
 
 @pytest.mark.parametrize("nickname,expected_valid", [
     ("john123", True),
@@ -42,3 +43,4 @@ def test_password_validation(password, expected_valid):
     """Test password validation with various cases"""
     is_valid, error_message = validate_password(password)
     assert is_valid == expected_valid, f"Failed for password: {password}, error: {error_message}" 
+    assert is_valid == expected_valid, f"Failed for nickname: {nickname}, error: {error_message}" 

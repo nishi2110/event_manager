@@ -35,6 +35,7 @@ def validate_nickname(nickname: str) -> tuple[bool, Optional[str]]:
     if re.search(r'[_-]{2,}', nickname):
         return False, "Nickname cannot contain consecutive special characters"
     
+
     return True, None 
 
 def validate_password(password: str) -> tuple[bool, Optional[str]]:
@@ -71,4 +72,5 @@ def validate_password(password: str) -> tuple[bool, Optional[str]]:
     if not any(c in "!@#$%^&*()_+-=[]{}|;:,.<>?" for c in password):
         return False, "Password must contain at least one special character"
     
+
     return True, None 

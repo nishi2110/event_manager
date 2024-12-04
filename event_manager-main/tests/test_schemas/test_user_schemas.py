@@ -100,3 +100,4 @@ def test_user_create_password_validation(password, should_raise, user_base_data)
     else:
         user = UserCreate(**test_data)
         assert user.password == password
+    assert error_found, "Email validation error not found in errors"
