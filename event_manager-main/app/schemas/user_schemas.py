@@ -7,6 +7,7 @@ import uuid
 import re
 
 from app.utils.nickname_gen import generate_nickname
+from app.utils.validation import validate_nickname
 
 class UserRole(str, Enum):
     ANONYMOUS = "ANONYMOUS"
@@ -24,7 +25,7 @@ def validate_url(url: Optional[str]) -> Optional[str]:
 
 class UserBase(BaseModel):
     email: EmailStr = Field(..., example="john.doe@example.com")
-    nickname: Optional[str] = Field(None, min_length=3, pattern=r'^[\w-]+$', example=generate_nickname())
+    nickname: Optional[str] = Field(None, example=generate_nickname())
     first_name: Optional[str] = Field(None, example="John")
     last_name: Optional[str] = Field(None, example="Doe")
     bio: Optional[str] = Field(None, example="Experienced software developer specializing in web applications.")
@@ -34,6 +35,15 @@ class UserBase(BaseModel):
 
     _validate_urls = validator('profile_picture_url', 'linkedin_profile_url', 'github_profile_url', pre=True, allow_reuse=True)(validate_url)
  
+    @validator('nickname')
+    def validate_nickname_format(cls, v):
+        if v is None:
+            return v
+        is_valid, error_message = validate_nickname(v)
+        if not is_valid:
+            raise ValueError(error_message)
+        return v
+
     class Config:
         from_attributes = True
 
