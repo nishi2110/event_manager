@@ -267,7 +267,17 @@ def login_request_data():
 
 @pytest.fixture
 def user_token():
-    return create_access_token(data={"sub": "john_doe_123", "role": UserRole.AUTHENTICATED.value})
-    
-    
+    user_data = {
+        "sub": "john_doe_123",
+        "role": UserRole.AUTHENTICATED.value
+    }
+    return create_access_token(data=user_data)
+
+@pytest.fixture
+def admin_token():
+    admin_data ={
+        "sub" : "Admin_User",
+        "role" : UserRole.ADMIN
+    }
+    return create_access_token(data=admin_data)
 
