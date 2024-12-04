@@ -266,17 +266,18 @@ def login_request_data():
     return {"username": "john_doe_123","email":"john.doe.new@example.com", "password": "SecurePassword123!"}
 
 @pytest.fixture
-async def user_token(async_client):
+def user_token():
     user_data = {
-        "email": "test@example.com",
-        "password": "sS#fdasrongPassword123!",
+        "sub": "john_doe_123",
+        "role": UserRole.AUTHENTICATED.value
     }
-    
-    await async_client.post("/register/", json=user_data)
-    response = await async_client.post("/login/", data=user_data)
-    
-    token_data = response.json()
-    return token_data["access_token"]
-    
-    
+    return create_access_token(data=user_data)
+
+@pytest.fixture
+def admin_token():
+    admin_data ={
+        "sub" : "Admin_User",
+        "role" : UserRole.ADMIN
+    }
+    return create_access_token(data=admin_data)
 
