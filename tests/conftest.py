@@ -246,12 +246,13 @@ def user_update_data():
         "full_name": "John H. Doe",
         "bio": "I specialize in backend development with Python and Node.js.",
         "profile_picture_url": "https://example.com/profile_pictures/john_doe_updated.jpg"
+        
     }
 
 @pytest.fixture
 def user_response_data():
     return {
-        "id": "unique-id-string",
+        "id": uuid4(),
         "username": "testuser",
         "email": "test@example.com",
         "last_login_at": datetime.now(),
