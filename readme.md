@@ -5,6 +5,8 @@ This project involves the development of a secure, robust REST API that supports
 
 ---
 
+![Screenshot](images.png)
+
 ## Closed Issues
 
 Here are the closed issues addressed during the development of this project:
