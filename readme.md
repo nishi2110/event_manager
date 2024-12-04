@@ -1,31 +1,33 @@
+
 # Event Manager REST API
 
 This project involves the development of a secure, robust REST API that supports JWT token-based OAuth2 authentication. The API includes user and event management features and focuses on testing, validation, and email integration.
 
 ---
 
-![Screenshot](images.png)
-
-
 ## Closed Issues
 
 Here are the closed issues addressed during the development of this project:
 
-1. **[User Data Missing Fixtures](https://github.com/chandrA957355/homework-10/tree/user_data_missing_fixtures)**  
-   - Issue: Missing user data fixtures for test cases, which resulted in incomplete test scenarios.
-   - Resolution: Added comprehensive fixtures to cover diverse user scenarios and improve test reliability.
+1. **[User Data Missing Fixtures](https://github.com/chandrA957355/homework-10/issues/1)**  
+   - **Issue:** Missing user data fixtures for test cases, which resulted in incomplete test scenarios.
+   - **Resolution:** Added comprehensive fixtures to cover diverse user scenarios and improve test reliability.
 
-2. **[JWT Token Validation](https://github.com/chandrA957355/homework-10/tree/jwt_token_validation)**  
-   - Issue: JWT token validation and generation were not conforming to OAuth2 standards.
-   - Resolution: Refined the token generation logic and implemented strict validation rules to enhance security.
+2. **[JWT Token Validation for Manager and Admin Users](https://github.com/chandrA957355/homework-10/issues/5)**  
+   - **Issue:** JWT token validation and generation were not conforming to OAuth2 standards.
+   - **Resolution:** Refined the token generation logic and implemented strict validation rules to enhance security.
 
-3. **[Password Validation](https://github.com/chandrA957355/homework-10/tree/password_validation)**  
-   - Issue: Weak password validation allowed insecure passwords.
-   - Resolution: Introduced custom validation logic for passwords to ensure adherence to security best practices.
+3. **[Enhance Password Validation and Update Field Checks in User Schemas](https://github.com/chandrA957355/homework-10/issues/4)**  
+   - **Issue:** Weak password validation and insufficient field checks in updates.
+   - **Resolution:** Introduced custom validation logic for passwords and enforced update field requirements.
 
-4. **[SMTP Server Connection Issue](https://github.com/chandrA957355/homework-10/tree/smtp_server_connection_issue)**  
-   - Issue: Failure in connecting to the SMTP server for email notifications.
-   - Resolution: Configured environment variables for SMTP credentials and implemented robust error handling for email services.
+4. **[SMTP Server Connection Issue](https://github.com/chandrA957355/homework-10/issues/3)**  
+   - **Issue:** Failure in connecting to the SMTP server for email notifications.
+   - **Resolution:** Configured environment variables for SMTP credentials and implemented robust error handling for email services.
+
+5. **[Failing Tests Due to Missing or Inconsistent Fixtures](https://github.com/chandrA957355/homework-10/issues/2)**  
+   - **Issue:** Missing or inconsistent fixtures in test cases caused failures in database operations.
+   - **Resolution:** Enhanced test fixtures with dynamic and realistic data, and addressed edge cases.
 
 ---
 
@@ -41,15 +43,16 @@ The project has been containerized using Docker. You can find the deployed image
 Working on this project provided an invaluable learning experience in both technical and collaborative aspects of software development. 
 
 ### Technical Skills
-- **REST API Development**: I deepened my understanding of building secure and scalable APIs using FastAPI. Implementing JWT-based authentication and user validation enhanced my knowledge of OAuth2 protocols.
-- **Testing and Fixtures**: Writing comprehensive unit and integration tests using pytest improved the project's reliability. Addressing edge cases and increasing test coverage provided insights into robust API design.
-- **Error Handling and Debugging**: Troubleshooting issues such as SMTP server connections and validation errors taught me how to methodically approach debugging in a distributed system.
+- **REST API Development**: Deepened understanding of secure, scalable APIs using FastAPI.
+- **Testing and Fixtures**: Improved project reliability with pytest and robust test coverage.
+- **Error Handling and Debugging**: Learned methodical approaches to troubleshooting distributed systems.
 
 ### Collaborative Processes
-- **Version Control with Git**: Managing branches for each issue and maintaining a structured workflow improved my Git skills. I also learned the importance of clear commit messages and documentation for collaboration.
-- **Team-Oriented Development**: Resolving issues through pull requests and addressing feedback during code reviews reinforced the importance of clear communication and teamwork.
+- **Version Control with Git**: Structured workflows with branches and clear commit messages.
+- **Team-Oriented Development**: Enhanced teamwork via pull requests and code reviews.
 
-This project was challenging but rewarding, as it provided real-world exposure to building and maintaining production-grade systems. The lessons learned will undoubtedly guide my future endeavors in software development.
+This project offered real-world exposure to building and maintaining production-grade systems, laying a strong foundation for future software development endeavors.
 
 ---
+
 Access the API documentation at http://localhost:8000/docs.
