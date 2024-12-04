@@ -21,7 +21,6 @@ from uuid import uuid4
 
 # Third-party imports
 import pytest
-from fastapi.testclient import TestClient
 from httpx import AsyncClient
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy.orm import sessionmaker, scoped_session
@@ -218,6 +217,7 @@ def user_base_data():
         "username": "john_doe_123",
         "email": "john.doe@example.com",
         "full_name": "John Doe",
+        "nickname": "johnjohn",
         "bio": "I am a software engineer with over 5 years of experience.",
         "profile_picture_url": "https://example.com/profile_pictures/john_doe.jpg"
     }
@@ -242,6 +242,7 @@ def user_update_data():
     return {
         "email": "john.doe.new@example.com",
         "full_name": "John H. Doe",
+        "first_name": "John",
         "bio": "I specialize in backend development with Python and Node.js.",
         "profile_picture_url": "https://example.com/profile_pictures/john_doe_updated.jpg"
     }
@@ -261,3 +262,22 @@ def user_response_data():
 @pytest.fixture
 def login_request_data():
     return {"username": "john_doe_123", "password": "SecurePassword123!"}
+
+@pytest.fixture
+async def user_token(verified_user):
+    # Generate a user token using the verified user's ID
+    token_data = {"sub": str(verified_user.id), "role": "USER"}
+    return create_access_token(data=token_data)
+
+@pytest.fixture
+async def admin_token(admin_user):
+    """
+    Generate a JWT token for an admin user.
+    """
+    token_data = {"sub": str(admin_user.id), "role": "ADMIN"}
+    return create_access_token(data=token_data)
+
+@pytest.fixture
+async def manager_token(manager_user):
+    token_data = {"sub": str(manager_user.id), "role": "MANAGER"}
+    return create_access_token(data=token_data)

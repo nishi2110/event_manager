@@ -23,6 +23,11 @@ class SMTPClient:
 
             with smtplib.SMTP(self.server, self.port) as server:
                 server.starttls()  # Use TLS
+                print(f"Username: {self.username}")
+                print(f"Password': {self.password}")
+                print(f"HTML CONTENT: {html_content}")
+                print(f"Message: {message.as_string()}")
+                      
                 server.login(self.username, self.password)
                 server.sendmail(self.username, recipient, message.as_string())
             logging.info(f"Email sent to {recipient}")
