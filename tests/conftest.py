@@ -15,6 +15,7 @@ Fixtures:
 # Standard library imports
 from datetime import datetime
 from uuid import uuid4
+from unittest.mock import AsyncMock, patch
 from datetime import timedelta
 
 
@@ -52,6 +53,17 @@ def email_service():
     """Provides an EmailService instance for testing."""
     template_manager = TemplateManager()
     return EmailService(template_manager=template_manager)
+
+@pytest.fixture
+def email_service_mock():
+    """Provides a mocked EmailService instance for testing."""
+    template_manager = TemplateManager()
+    email_service = EmailService(template_manager=template_manager)
+
+    # Mock the SMTPClient's send_email method
+    with patch.object(email_service.smtp_client, 'send_email', new=AsyncMock()) as mock_send_email:
+        email_service.smtp_client.send_email = mock_send_email
+        yield email_service
 
 
 @pytest.fixture(scope="function")
@@ -138,6 +150,55 @@ async def manager_user(db_session):
     await db_session.commit()
     return user
 
+@pytest.fixture
+def user_base_data():
+    return {
+        "email": "testuser@example.com",
+        "nickname": "test_user",
+        "profile_url": "http://example.com/profile.jpg",
+    }
+
+@pytest.fixture
+def user_create_data():
+    return {
+        "email": "newuser@example.com",
+        "nickname": "new_user",
+        "password": "SecurePassword123!",
+    }
+
+@pytest.fixture
+def login_request_data():
+    return {
+        "email": "testuser@example.com",
+        "password": "SecurePassword123!",
+    }
+
+@pytest.fixture
+def user_update_data():
+    return {
+        "nickname": "updated_user",
+        "email": "updated_user@example.com",
+        "profile_url": "http://example.com/profile.jpg",
+        "first_name": "UpdatedFirstName",
+    }
+
+@pytest.fixture
+def user_response_data():
+    return {
+        "id": str(uuid4()),
+        "nickname": "test_user",
+        "email": "test_user@example.com",
+        "profile_url": "http://example.com/profile.jpg",
+        "is_verified": True,
+    }
+
+@pytest.fixture
+def user_base_data_invalid():
+    return {
+        "email": "invalid-email",
+        "nickname": "",
+        "profile_url": "invalid-url",
+    }
 
 @pytest.fixture(scope="function")
 async def verified_user(db_session):
