@@ -1,9 +1,12 @@
 from builtins import range
+from pydantic import ValidationError
 import pytest
 from sqlalchemy import select
+from sqlalchemy.exc import SQLAlchemyError
 from app.dependencies import get_settings
 from app.models.user_model import User
 from app.services.user_service import UserService
+from app.utils import nickname_gen
 
 pytestmark = pytest.mark.asyncio
 
@@ -156,3 +159,53 @@ async def test_unlock_user_account(db_session, locked_user):
     assert unlocked, "The account should be unlocked"
     refreshed_user = await UserService.get_by_id(db_session, locked_user.id)
     assert not refreshed_user.is_locked, "The user should no longer be locked"
+
+async def test_create_user_with_nickname_collision(db_session, email_service):
+    async def mock_generate_nickname():
+        return "duplicate_nickname"
+
+    
+    original_generate_nickname = nickname_gen.generate_nickname
+    nickname_gen.generate_nickname = mock_generate_nickname
+
+    user_data = {
+        "email": "unique_user@example.com",
+        "password": "UniquePassword123!",
+    }
+
+    # Create a user to cause a nickname collision
+    await UserService.create(db_session, user_data, email_service)
+
+    # Attempt to create another user, which should handle the collision
+    user_data["email"] = "another_user@example.com"
+    user = await UserService.create(db_session, user_data, email_service)
+    assert user is not None
+    assert user.nickname != "duplicate_nickname"
+
+    # Restore the original function
+    nickname_gen.generate_nickname = original_generate_nickname
+
+
+async def test_execute_query_error_handling(db_session):
+    class MockSession:
+        async def execute(self, query):
+            raise SQLAlchemyError("Simulated DB error")
+        async def commit(self):
+            pass
+        async def rollback(self):
+            pass
+    session = MockSession()
+    result = await UserService._execute_query(session, select(User))
+    assert result is None
+
+async def test_list_users_empty(db_session):
+    users = await UserService.list_users(db_session, skip=0, limit=10)
+    assert users == []
+
+async def test_verify_email_with_invalid_token(db_session, user):
+    result = await UserService.verify_email_with_token(db_session, user.id, "wrong_token")
+    assert not result
+
+async def test_list_users_pagination_boundary(db_session, users_with_same_role_50_users):
+    users = await UserService.list_users(db_session, skip=100, limit=10)
+    assert users == []
