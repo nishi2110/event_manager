@@ -7,7 +7,7 @@ import uuid
 import re
 
 from app.utils.nickname_gen import generate_nickname
-from app.utils.validation import validate_nickname
+from app.utils.validation import validate_nickname, validate_password
 
 class UserRole(str, Enum):
     ANONYMOUS = "ANONYMOUS"
@@ -49,7 +49,14 @@ class UserBase(BaseModel):
 
 class UserCreate(UserBase):
     email: EmailStr = Field(..., example="john.doe@example.com")
-    password: str = Field(..., example="Secure*1234")
+    password: str = Field(..., example="SecurePass123!")
+
+    @validator('password')
+    def validate_password_strength(cls, v):
+        is_valid, error_message = validate_password(v)
+        if not is_valid:
+            raise ValueError(error_message)
+        return v
 
 class UserUpdate(UserBase):
     email: Optional[EmailStr] = Field(None, example="john.doe@example.com")

@@ -80,3 +80,23 @@ def test_user_base_invalid_email():
             error_found = True
             break
     assert error_found, "Email validation error not found in errors"
+
+@pytest.mark.parametrize("password,should_raise", [
+    ("SecurePass123!", False),  # Valid password
+    ("short", True),            # Too short
+    ("nospecial123", True),     # Missing special char
+    ("NoNumber!", True),        # Missing number
+])
+def test_user_create_password_validation(password, should_raise, user_base_data):
+    """Test password validation in UserCreate schema"""
+    test_data = {
+        **user_base_data,
+        "password": password
+    }
+    
+    if should_raise:
+        with pytest.raises(ValidationError):
+            UserCreate(**test_data)
+    else:
+        user = UserCreate(**test_data)
+        assert user.password == password
