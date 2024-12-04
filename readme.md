@@ -34,7 +34,7 @@ Here are the closed issues addressed during the development of this project:
 ## Docker Image
 
 The project has been containerized using Docker. You can find the deployed image on DockerHub:  
-[DockerHub Project Image](https://hub.docker.com/repository/docker/chandrA957355/homework-10)
+[DockerHub Project Image](https://hub.docker.com/repository/docker/chandra957355/homework-10/general)
 
 ---
 
