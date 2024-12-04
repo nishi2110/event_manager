@@ -60,7 +60,7 @@ def email_service_mock():
     template_manager = TemplateManager()
     email_service = EmailService(template_manager=template_manager)
 
-    # Mock the SMTPClient's send_email method
+    # Mock the SMTPClient send_email method
     with patch.object(email_service.smtp_client, 'send_email', new=AsyncMock()) as mock_send_email:
         email_service.smtp_client.send_email = mock_send_email
         yield email_service
