@@ -6,7 +6,7 @@ This repository hosts the source code for the Event Manager project, a web appli
 This document details the progress made on the project, highlights resolved and unresolved issues, and provides insights into the learning process during the development journey.
 
 ## Github Links
-** Closed Issues**: Links
+**Closed Issues**: Links\
 **Dockerhub Image**: Dockerhub Image
 
 
@@ -24,7 +24,7 @@ Moreover, I kept setting up Dockerized environments for PostgreSQL and FastAPI, 
 
 **Remaining Issues**
 >Despite extensive efforts, a few issues remain unresolved:
->>1. Certain tests for the email service and user APIs fail due to subtle configuration mismatches in fixtures or dependency injection.
->>2. Failed SMTPServerDisconnected error persists: 'smtplib.SMTPServerDisconnected: Connection unexpectedly closed'
+>1. Certain tests for the email service and user APIs fail due to subtle configuration mismatches in fixtures or dependency injection.
+>2. Failed SMTPServerDisconnected error persists: 'smtplib.SMTPServerDisconnected: Connection unexpectedly closed'
 
 Moving forward, I plan to investigate alternative testing strategies, refine dependency management, and explore advanced database schema handling techniques.
