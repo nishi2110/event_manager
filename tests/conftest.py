@@ -281,3 +281,10 @@ def admin_token():
     }
     return create_access_token(data=admin_data)
 
+@pytest.fixture
+def manager_token():
+    manager_data ={
+        "sub" : "Manager_User",
+        "role" : UserRole.MANAGER.value
+    }
+    return create_access_token(data=manager_data)
