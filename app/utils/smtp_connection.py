@@ -22,7 +22,7 @@ class SMTPClient:
             message.attach(MIMEText(html_content, 'html'))
 
             with smtplib.SMTP(self.server, self.port) as server:
-                server.starttls()  # Use TLS
+                server.starttls()  # Use TLS      
                 server.login(self.username, self.password)
                 server.sendmail(self.username, recipient, message.as_string())
             logging.info(f"Email sent to {recipient}")
