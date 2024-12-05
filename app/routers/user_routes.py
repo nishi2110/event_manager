@@ -33,6 +33,8 @@ from app.services.jwt_service import create_access_token
 from app.utils.link_generation import create_user_links, generate_pagination_links
 from app.dependencies import get_settings
 from app.services.email_service import EmailService
+import logging
+
 router = APIRouter()
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
 settings = get_settings()
@@ -230,6 +232,11 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends(), session: Async
 
 #         return {"access_token": access_token, "token_type": "bearer"}
 #     raise HTTPException(status_code=401, detail="Incorrect email or password.")
+
+
+
+def log_exception(exc: HTTPException):
+    logging.error(f"Error {exc.status_code}: {exc.detail}")
 
 
 @router.get("/verify-email/{user_id}/{token}", status_code=status.HTTP_200_OK, name="verify_email", tags=["Login and Registration"])
