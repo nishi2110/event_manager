@@ -6,7 +6,10 @@ This repository hosts the source code for the Event Manager project, a web appli
 This document details the progress made on the project, highlights resolved and unresolved issues, and provides insights into the learning process during the development journey.
 
 ## Github Links
-**Closed Issues**: Links\
+**Closed Issues**: 
+1. [Issue#1](https://github.com/Livia-1212/event_manager/issues/1)
+3. [Issue#3](https://github.com/Livia-1212/event_manager/issues/3)
+
 **Dockerhub Image**: Dockerhub Image
 
 

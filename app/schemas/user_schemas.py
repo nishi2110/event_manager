@@ -1,7 +1,8 @@
 from builtins import ValueError, any, bool, str
-from pydantic import BaseModel, EmailStr, Field, validator, root_validator
+from pydantic import BaseModel, EmailStr, Field, field_validator
 from typing import Optional, List
 from datetime import datetime
+from app.models.user_model import UserRole
 from enum import Enum
 import uuid
 import re
@@ -32,7 +33,12 @@ class UserBase(BaseModel):
     linkedin_profile_url: Optional[str] =Field(None, example="https://linkedin.com/in/johndoe")
     github_profile_url: Optional[str] = Field(None, example="https://github.com/johndoe")
 
-    _validate_urls = validator('profile_picture_url', 'linkedin_profile_url', 'github_profile_url', pre=True, allow_reuse=True)(validate_url)
+    # Corrected field_validator usage
+    @field_validator('profile_picture_url', 'linkedin_profile_url', 'github_profile_url', mode='before')
+    def validate_urls(cls, value):
+        if value:
+            validate_url(value)  # Assuming validate_url raises exceptions if the URL is invalid
+        return value
  
     class Config:
         from_attributes = True
@@ -51,9 +57,9 @@ class UserUpdate(UserBase):
     linkedin_profile_url: Optional[str] =Field(None, example="https://linkedin.com/in/johndoe")
     github_profile_url: Optional[str] = Field(None, example="https://github.com/johndoe")
 
-    @root_validator(pre=True)
+    @field_validator('*', mode='before')
     def check_at_least_one_value(cls, values):
-        if not any(values.values()):
+        if isinstance(values,dict) and not any(values.values()):
             raise ValueError("At least one field must be provided for update")
         return values
 
@@ -61,12 +67,14 @@ class UserResponse(UserBase):
     id: uuid.UUID = Field(..., example=uuid.uuid4())
     role: UserRole = Field(default=UserRole.AUTHENTICATED, example="AUTHENTICATED")
     email: EmailStr = Field(..., example="john.doe@example.com")
-    nickname: Optional[str] = Field(None, min_length=3, pattern=r'^[\w-]+$', example=generate_nickname())    
-    role: UserRole = Field(default=UserRole.AUTHENTICATED, example="AUTHENTICATED")
+    nickname: Optional[str] = Field(None, min_length=3, pattern=r'^[\w-]+$', example=generate_nickname())
     is_professional: Optional[bool] = Field(default=False, example=True)
+    created_at: Optional[datetime]
+    updated_at: Optional[datetime]
+    last_login_at: Optional[datetime]
 
 class LoginRequest(BaseModel):
-    email: str = Field(..., example="john.doe@example.com")
+    username: str = Field(..., example="john.doe@example.com")
     password: str = Field(..., example="Secure*1234")
 
 class ErrorResponse(BaseModel):
