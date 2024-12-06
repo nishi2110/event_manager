@@ -1,5 +1,5 @@
 from builtins import ValueError, any, bool, str
-from pydantic import BaseModel, EmailStr, Field, validator, root_validator
+from pydantic import BaseModel, EmailStr, Field, validator, root_validator # type: ignore
 from typing import Optional, List
 from datetime import datetime
 from enum import Enum
@@ -63,7 +63,6 @@ class UserCreate(UserBase):
         if not re.search(r'[!@#$%^&*(),.?":{}|<>]', value):
             raise ValueError("Password must contain at least one special character.")
         return value
-    
     
 class UserUpdate(UserBase):
     email: Optional[EmailStr] = Field(None, example="john.doe@example.com")
